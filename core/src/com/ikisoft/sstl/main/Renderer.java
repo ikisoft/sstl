@@ -13,7 +13,9 @@ import com.badlogic.gdx.utils.Timer;
 import com.ikisoft.sstl.gameobjects.Spacecraft;
 import com.ikisoft.sstl.gameobjects.Spacejunk;
 import com.ikisoft.sstl.helpers.AssetLoader;
+import com.ikisoft.sstl.helpers.DataHandler;
 
+import java.sql.Time;
 import java.util.Random;
 
 /**
@@ -22,6 +24,7 @@ import java.util.Random;
 
 public class Renderer {
 
+    private long startTime;
     private Random random;
     private Updater updater;
     private Spacecraft spacecraft;
@@ -37,11 +40,12 @@ public class Renderer {
     private boolean devEnabled;
     private GlyphLayout glyphLayout;
     private String logo, info, shop, options, gameover;
+    private int armor, speed;
 
     public Renderer(Updater updater){
 
         devEnabled = false;
-
+        startTime = TimeUtils.nanoTime();
 
         random = new Random();
         this.updater = updater;
@@ -72,8 +76,9 @@ public class Renderer {
 
         glyphLayout = new GlyphLayout();
         logo = "   (Slightly)\nSlower Than Light";
-        info = "just some info lol";
-        shop = "wow look at this\nfucking shop";
+        info = "GFH JAM 2017\n" +
+                "  ikisoft";
+        shop = "LOCAL SPACE SHOP";
         options = "here are some\noptions!";
         gameover = "oh dear,\nyou ran into\nsome junk...";
 
@@ -87,6 +92,7 @@ public class Renderer {
 
         switch (updater.getGameState()){
             case START:
+                startTime = TimeUtils.nanoTime();
                 renderStart();
                 break;
             case MAINMENU:
@@ -120,6 +126,8 @@ public class Renderer {
     }
 
     private void renderStart(){
+        runTime = Gdx.graphics.getDeltaTime();
+
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.enableBlending();
@@ -148,6 +156,9 @@ public class Renderer {
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
                 updater.getLogo().y - 1000);
+
+        /*batch.draw(AssetLoader.wireframeAnimation.getKeyFrame(runTime),
+                540 - 128, updater.getLogo().y - 450);*/
 
         batch.end();
 
@@ -210,9 +221,9 @@ public class Renderer {
 
         }*/
 
-        if(devEnabled)AssetLoader.font.draw(batch, "Distance: " + updater.getDistance(), 50, 1800);
-
-        System.out.println(updater.getDistance());
+        if(devEnabled)AssetLoader.font.draw(batch,
+                "Distance: " + Math.round(updater.getDistance()),
+                50, 1800);
         batch.end();
         shapeRenderer.end();
 
@@ -232,6 +243,24 @@ public class Renderer {
         glyphLayout.setText(AssetLoader.font, info);
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2, updater.getLogo().y);
+
+        glyphLayout.setText(AssetLoader.font, "COMING TO GOOGLE PLAY\n" +
+                "When it's ready...");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+                updater.getLogo().y-175);
+
+        glyphLayout.setText(AssetLoader.font, "MUSIC & PROGRAMMING\n" +
+                "       IKIS");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+                updater.getLogo().y-500);
+
+        glyphLayout.setText(AssetLoader.font, "GRAPHIC DESIGNER\n" +
+                "  EELIS OTSAMO");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+                updater.getLogo().y-750);
 
         glyphLayout.setText(AssetLoader.font, "BACK");
         glyphWidth = glyphLayout.width;
@@ -253,15 +282,47 @@ public class Renderer {
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2, updater.getLogo().y);
 
+        glyphLayout.setText(AssetLoader.font, "OPTIONS");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+                updater.getLogo().y - 850);
+
         glyphLayout.setText(AssetLoader.font, "PLAY");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
                 updater.getLogo().y - 1000);
 
+        glyphLayout.setText(AssetLoader.font,DataHandler.money+"$");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+                updater.getLogo().y - 150);
+
+        glyphLayout.setText(AssetLoader.font,"Upgrade\n"
+        + DataHandler.healthLevel * 100);
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, 128,
+                updater.getLogo().y - 600);
+
+        glyphLayout.setText(AssetLoader.font,"Upgrade\n"
+        + DataHandler.speedLevel * 75);
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, VIRTUAL_WIDTH/2 + 128,
+                updater.getLogo().y - 600);
+
+
+
+
+        batch.draw(AssetLoader.armorUp3, 128, updater.getLogo().y - 550);
+
+        batch.draw(AssetLoader.speedUp1, VIRTUAL_WIDTH/2 + 128, updater.getLogo().y - 550);
+
+
         batch.end();
     }
 
     private void renderGameover(){
+
+        startTime = TimeUtils.nanoTime();
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
@@ -329,17 +390,45 @@ public class Renderer {
 
     private void drawSpacecraft() {
 
-        spacecraftTexture = AssetLoader.spacecraft;
+        armor = DataHandler.healthLevel;
+        speed = DataHandler.speedLevel;
 
-        if(spacecraft.getMovingLeft()){
-            spacecraftTexture = AssetLoader.spacecraftLeft;
-        } else if(spacecraft.getMovingRight()){
-            spacecraftTexture = AssetLoader.spacecraftRight;
+        if(armor >= 3 && armor < 5) {
+            spacecraftTexture = AssetLoader.spacecraft;
+
+            if(spacecraft.getMovingLeft()){
+                spacecraftTexture = AssetLoader.spacecraftLeft;
+            } else if(spacecraft.getMovingRight()){
+                spacecraftTexture = AssetLoader.spacecraftRight;
+            }
+
+        } else if(armor >= 5 && armor < 10){
+
+            spacecraftTexture = AssetLoader.armorTier1;
+
+            if(spacecraft.getMovingLeft()){
+                spacecraftTexture = AssetLoader.armorTier1Left;
+            } else if(spacecraft.getMovingRight()){
+                spacecraftTexture = AssetLoader.armorTier1Right;
+            }
+
+        } else if(armor == 10){
+
+            spacecraftTexture = AssetLoader.armorTier2;
+
+            if(spacecraft.getMovingLeft()){
+                spacecraftTexture = AssetLoader.armorTier2Left;
+            } else if(spacecraft.getMovingRight()){
+                spacecraftTexture = AssetLoader.armorTier2Right;
+            }
+
         }
+
+
 
         batch.draw(spacecraftTexture,
                 spacecraft.getPosition().x - 64,
-                spacecraft.getPosition().y
+                spacecraft.getPosition().y - 32
 
                 //,
                 //spacecraft.getHitbox().width,
@@ -642,12 +731,18 @@ public class Renderer {
     public void drawHealth(){
 
         for(int i = 220; i < 860 - 1; i += 64){
-            batch.draw(AssetLoader.healthBarFrame, i, 256, 64, 64);
+            batch.draw(AssetLoader.healthBarFrame, i, 128, 64, 64);
 
             }
 
+      /*  for(int i = 0; i < 640 * (updater.getSpacecraft().getHealth() * 0.1) - 1; i += 64){
+            batch.draw(AssetLoader.healthBar, i + 220, 128, 64, 64);
+
+
+        }*/
+
         for(int i = 0; i < 640 * (updater.getSpacecraft().getHealth() * 0.1) - 1; i += 64){
-            batch.draw(AssetLoader.healthBar, i + 220, 256, 64, 64);
+            batch.draw(AssetLoader.healthBar, i + 220, 128, 64, 64);
 
 
         }

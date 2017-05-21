@@ -3,6 +3,8 @@ package com.ikisoft.sstl.gameobjects;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.utils.DataBuffer;
+import com.ikisoft.sstl.helpers.DataHandler;
 
 import java.util.Vector;
 
@@ -31,10 +33,12 @@ public class Spacecraft {
         //3
         maxThrust = 3;
         //0.1
-        thrustPower = 0.5f;
+        thrustPower = (float) (0.04 + (0.01 * DataHandler.speedLevel));
         //0.3
-        thrustDece = 0.3f;
-        health = 3;
+        thrustDece = 0.03f;
+        health = DataHandler.healthLevel;
+        System.out.println("creating spacecraft, health: " + health
+        + "speed: " + thrustPower);
 
     }
 
@@ -91,7 +95,10 @@ public class Spacecraft {
         thrustRight = 0;
         movingLeft = false;
         movingRight = false;
-        health = 3;
+        thrustPower = (float) (0.04 + (0.01 * DataHandler.speedLevel));
+        health = DataHandler.healthLevel;
+
+
 
     }
 

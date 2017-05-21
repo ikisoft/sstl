@@ -10,8 +10,8 @@ import com.badlogic.gdx.Preferences;
 public class DataHandler {
 
     public static Preferences prefs;
-    public static int health;
-    public static int tier;
+    public static int healthLevel;
+    public static int speedLevel;
     public static int money;
     public static int highscore;
 
@@ -21,15 +21,36 @@ public class DataHandler {
 
         prefs = Gdx.app.getPreferences("SSTL_prefs");
         money = prefs.getInteger("money");
+        //highscore = prefs.getInteger("highscore");
+        healthLevel = prefs.getInteger("healthlevel");
+        if(healthLevel == 0){
+            healthLevel = 3;
+        }
+/*        speedLevel = prefs.getInteger("speedlevel");
+        if(speedLevel == 0){
+            speedLevel = 1;
+        }*/
 
-        highscore = prefs.getInteger("highscore");
-        health = prefs.getInteger("health");
+        speedLevel = prefs.getInteger("speedlevel");
+        if(speedLevel > 1){
+            speedLevel = 1;
+        }
     }
 
     public static void save(){
 
+        //prefs.putInteger("highscore", highscore);
+        prefs.putInteger("money", money);
+        //prefs.putInteger("health", healthLevel);
+        //prefs.putInteger("speedlevel", speedLevel);
+
+        prefs.putBoolean("soundMuted", soundMuted);
+        prefs.putBoolean("musicMuted", musicMuted);
+        prefs.flush();
+
 
     }
+
 
     public static void muteSound() {
 
@@ -44,12 +65,12 @@ public class DataHandler {
 
         if (!musicMuted) {
             musicMuted = true;
-            //AssetLoader.theme.setVolume(0);
+            AssetLoader.theme.setVolume(0);
 
         } else {
             musicMuted = false;
-            //AssetLoader.theme.setVolume(0.5f);
-            //AssetLoader.theme.play();
+            AssetLoader.theme.setVolume(0.5f);
+            AssetLoader.theme.play();
 
         }
     }

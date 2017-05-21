@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.input.GestureDetector;
 import com.ikisoft.sstl.helpers.AssetLoader;
+import com.ikisoft.sstl.helpers.DataHandler;
 import com.ikisoft.sstl.helpers.GestureHandler;
 import com.ikisoft.sstl.helpers.InputHandler;
 import com.ikisoft.sstl.main.Renderer;
@@ -24,7 +25,9 @@ public class SSTL extends ApplicationAdapter {
 	@Override
 	public void create () {
 
+		DataHandler.load();
 		AssetLoader.load();
+
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
 		updater = new Updater();
@@ -53,6 +56,8 @@ public class SSTL extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
+		AssetLoader.dispose();
+		DataHandler.save();
 
 	}
 }

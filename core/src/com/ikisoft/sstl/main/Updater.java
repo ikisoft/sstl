@@ -3,8 +3,11 @@ package com.ikisoft.sstl.main;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.ikisoft.sstl.gameobjects.Spacecraft;
 import com.ikisoft.sstl.gameobjects.Spacejunk;
+import com.ikisoft.sstl.helpers.AssetLoader;
+import com.ikisoft.sstl.helpers.DataHandler;
 import com.ikisoft.sstl.helpers.LerpHandler;
 
 /**
@@ -13,11 +16,13 @@ import com.ikisoft.sstl.helpers.LerpHandler;
 
 public class Updater {
 
+    long startTime;
+    long distance;
     private GameState gameState;
     private Spacecraft spacecraft;
     private Spacejunk spacejunk, spacejunk2, spacejunk3, spacejunk4, spacejunk5;
     private LerpHandler logo;
-    private float distance;
+    private boolean dataSaved;
 
     public enum GameState{
 
@@ -29,7 +34,7 @@ public class Updater {
 
         gameState = GameState.START;
 
-        spacecraft = new Spacecraft(284, 384, 128, 200);
+        spacecraft = new Spacecraft(540, 384, 128, 128);
         //cow
         spacejunk = new Spacejunk(300, 300, this);
         //fish
@@ -38,10 +43,15 @@ public class Updater {
         spacejunk3 = new Spacejunk(150, 150, this);
         //apple
         spacejunk4 = new Spacejunk(150, 150, this);
+        //tire
         spacejunk5 = new Spacejunk(256, 256, this);
-
-        logo = new LerpHandler(200, 2300, 200, 1536);
+        //start y  2300
+        logo = new LerpHandler(200, 2600, 200, 1536);
         distance = 0;
+
+        startTime = TimeUtils.nanoTime();
+        dataSaved = false;
+
 
     }
 
@@ -55,11 +65,17 @@ public class Updater {
                 updateMainmenu();
                 break;
             case RUNNING:
+                dataSaved = false;
                 updateRunning(delta);
                 break;
             case PAUSED:
                 break;
             case GAMEOVER:
+                if(!dataSaved){
+                    dataSaved = true;
+                    save();
+                    System.out.println("saved");
+                }
                 updateGameover(delta);
                 break;
             case OPTIONS:
@@ -92,7 +108,7 @@ public class Updater {
 
     private void updateRunning(float delta) {
 
-        distance += 0.1;
+        distance += 1;
 
         spacecraft.update(delta);
         spacejunk.update(delta);
@@ -129,6 +145,7 @@ public class Updater {
         spacejunk5.reset();
         gameState = GameState.RUNNING;
         distance = 0;
+        startTime = 0;
     }
 
     private void updateCollision() {
@@ -153,7 +170,9 @@ public class Updater {
 
             } else if (spacecraft.getHealth() == 0){
                 spacejunk2.setDestroyed();
-                gameState = GameState.GAMEOVER;
+
+                    gameState = GameState.GAMEOVER;
+
 
             }
 
@@ -193,6 +212,12 @@ public class Updater {
 
             }
         }
+    }
+
+    private void save(){
+        DataHandler.money += distance / 10;
+        System.out.println("money: " + DataHandler.money);
+        DataHandler.save();
     }
 
 

@@ -14,7 +14,7 @@ public class InputHandler implements InputProcessor {
     private Updater updater;
     private float screenWidth;
     private float screenHeight;
-    private Button menuButton;
+    private Button menuButton, shopButton;
 
     public InputHandler(Updater updater, float screenWidth, float screenHeight){
 
@@ -22,6 +22,7 @@ public class InputHandler implements InputProcessor {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         menuButton = new Button(screenWidth/3, 100);
+        shopButton = new Button(256, 256);
 
     }
 
@@ -110,6 +111,41 @@ public class InputHandler implements InputProcessor {
                 break;
 
             case SHOP:
+
+                if(shopButton.isDown(x, y, 256, 800)){
+
+                    if(DataHandler.healthLevel < 10){
+
+                        if(DataHandler.money >= 100 * DataHandler.healthLevel){
+                            if(DataHandler.money - DataHandler.healthLevel >= 0){
+                                DataHandler.healthLevel++;
+                                DataHandler.money -= 100 * DataHandler.healthLevel;
+
+                            }
+
+
+
+                        }
+                    }
+
+                    System.out.println("healthup");
+                }
+
+                if(shopButton.isDown(x, y, 780, 800)){
+
+                    if(DataHandler.speedLevel < 10) {
+
+                        if (DataHandler.money >= 75 * DataHandler.speedLevel) {
+                            if (DataHandler.money - DataHandler.speedLevel >= 0) {
+                                DataHandler.speedLevel++;
+                                DataHandler.money -= 75 * DataHandler.speedLevel;
+
+                            }
+                        }
+                    }
+
+                    System.out.println("speedup");
+                }
 
                 if(menuButton.isDown(x, y, 540, 1430)){
 
