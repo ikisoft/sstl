@@ -13,8 +13,8 @@ public class GestureHandler implements GestureDetector.GestureListener {
 
     private Updater updater;
     private Spacecraft spacecraft;
-    int screenWidth;
-    int screenHeight;
+    private int screenWidth;
+    private int screenHeight;
 
     public GestureHandler(Updater updater, Spacecraft spacecraft, int screenWidth, int screenHeight){
 
@@ -28,9 +28,6 @@ public class GestureHandler implements GestureDetector.GestureListener {
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-
-
-
         return false;
     }
 

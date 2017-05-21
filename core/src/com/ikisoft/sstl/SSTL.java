@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.input.GestureDetector;
+import com.ikisoft.sstl.helpers.AssetLoader;
 import com.ikisoft.sstl.helpers.GestureHandler;
 import com.ikisoft.sstl.helpers.InputHandler;
 import com.ikisoft.sstl.main.Renderer;
@@ -19,22 +20,23 @@ public class SSTL extends ApplicationAdapter {
 	private InputMultiplexer multiplexer;
 
 
+
 	@Override
 	public void create () {
 
+		AssetLoader.load();
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
 		updater = new Updater();
 		renderer = new Renderer(updater);
-		multiplexer = new InputMultiplexer();
 
+		multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(new InputHandler(updater,
+				screenWidth, screenHeight));
 		multiplexer.addProcessor(new GestureDetector(new GestureHandler(
 				updater,
 				updater.getSpacecraft(),
 				screenWidth, screenHeight)));
-
-		multiplexer.addProcessor(new InputHandler(updater,
-				screenWidth, screenHeight));
 		Gdx.input.setInputProcessor(multiplexer);
 
 	}

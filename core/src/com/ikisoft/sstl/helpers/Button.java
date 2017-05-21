@@ -10,15 +10,13 @@ public class Button {
 
     private Vector2 size;
 
-    public Button(int width, int height) {
+    public Button(float width, float height) {
 
-        size = new Vector2();
+        size = new Vector2(width, height);
 
-        size.x = width;
-        size.y = height;
     }
 
-    public boolean isDown(int x, int y, int posx, int posy) {
+    public boolean isDown(int x, int y, float posx, float posy) {
 
         if (x > posx - (size.x / 2) && x < posx + (size.x / 2)) {
             if (y > posy - (size.y / 2) && y < posy + (size.y / 2)) {

@@ -16,6 +16,7 @@ public class Spacecraft {
     private Rectangle hitbox;
     private boolean movingLeft, movingRight;
     private float thrustLeft, thrustRight, maxThrust, thrustPower, thrustDece;
+    private int health;
 
 
     public Spacecraft(float x, float y, float width, float height){
@@ -27,9 +28,13 @@ public class Spacecraft {
         movingRight = false;
         thrustLeft = 0;
         thrustRight = 0;
+        //3
         maxThrust = 3;
-        thrustPower = 0.1f;
-        thrustDece = 0.03f;
+        //0.1
+        thrustPower = 0.5f;
+        //0.3
+        thrustDece = 0.3f;
+        health = 3;
 
     }
 
@@ -79,12 +84,14 @@ public class Spacecraft {
     }
 
     public void reset(){
-        setPosition(284, 256);
+        setPosition(284, 384);
         hitbox.x = position.x;
         hitbox.y = position.y;
         thrustLeft = 0;
         thrustRight = 0;
-
+        movingLeft = false;
+        movingRight = false;
+        health = 3;
 
     }
 
@@ -124,6 +131,23 @@ public class Spacecraft {
 
         movingRight = false;
 
+    }
+
+    public boolean getMovingLeft(){
+        return movingLeft;
+    }
+
+    public boolean getMovingRight(){
+        return movingRight;
+    }
+
+    public int getHealth(){
+        return health;
+    }
+
+    public void setHealth(){
+        health -= 1;
+        System.out.println(health);
     }
 
 
