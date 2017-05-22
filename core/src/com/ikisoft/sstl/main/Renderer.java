@@ -24,7 +24,7 @@ import java.util.Random;
 
 public class Renderer {
 
-    private long startTime;
+    private long startTime = 0;
     private Random random;
     private Updater updater;
     private Spacecraft spacecraft;
@@ -32,21 +32,21 @@ public class Renderer {
     private static final float VIRTUAL_WIDTH = 1080;
     private static final float VIRTUAL_HEIGHT = 1920;
     private static OrthographicCamera camera;
-    private float runTime, rotation, rotation2, r, g, b, r2, g2, b2, r3, g3, b3, glyphWidth;
+    private float rotation, rotation2, r, g, b, r2, g2, b2, r3, g3, b3, glyphWidth, glyphHeight;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private TextureRegion spacecraftTexture;
     private Vector2 planetPosition, asteroidPosition;
-    private boolean devEnabled;
+    private boolean devEnabled, gameover, warningSwitch, timeReset;
     private GlyphLayout glyphLayout;
-    private String logo, info, shop, options, gameover;
-    private int armor, speed;
+    private String logoText, infoText, shopText, optionsText, gameoverText;
+    private int timer, armor, speed;
 
-    public Renderer(Updater updater){
+    public Renderer(Updater updater) {
 
         devEnabled = false;
+        gameover = false;
         startTime = TimeUtils.nanoTime();
-
         random = new Random();
         this.updater = updater;
         camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
@@ -57,8 +57,8 @@ public class Renderer {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setProjectionMatrix(camera.combined);
         rotation2 = 360;
-        planetPosition = new Vector2(300, 4000);
-        asteroidPosition = new Vector2(800, random.nextInt(3000));
+        planetPosition = new Vector2(300, 2000);
+        asteroidPosition = new Vector2(800, random.nextInt(1000));
         r = random.nextFloat();
         g = random.nextFloat();
         b = random.nextFloat();
@@ -66,46 +66,59 @@ public class Renderer {
         g2 = random.nextFloat();
         b2 = random.nextFloat();
         r3 = random.nextFloat();
-        if(r3 > 0.25f)r3 = 0.25f;
+        if (r3 > 0.25f) r3 = 0.25f;
         g3 = random.nextFloat();
-        if(g3 > 0.25f)g3 = 0.25f;
+        if (g3 > 0.25f) g3 = 0.25f;
         b3 = random.nextFloat();
-        if(b3 > 0.25f)g3 = 0.25f;
-
+        if (b3 > 0.25f) g3 = 0.25f;
+        timer = 0;
+        warningSwitch = false;
 
 
         glyphLayout = new GlyphLayout();
-        logo = "   (Slightly)\nSlower Than Light";
-        info = "GFH JAM 2017\n" +
+        logoText = "   (Slightly)\nSlower Than Light";
+        infoText = "GFH JAM 2017\n" +
                 "  ikisoft";
-        shop = "LOCAL SPACE SHOP";
-        options = "here are some\noptions!";
-        gameover = "oh dear,\nyou ran into\nsome junk...";
-
-
+        shopText = "LOCAL SPACE SHOP";
+        optionsText = "here are some\noptionsText!";
+        gameoverText = "oh dear,\nyou ran into\nsome junk...";
 
 
     }
 
-    public void render(){
+    public void render(float runTime) {
 
 
-        switch (updater.getGameState()){
+        switch (updater.getGameState()) {
             case START:
-                startTime = TimeUtils.nanoTime();
-                renderStart();
+                renderStart(runTime);
                 break;
             case MAINMENU:
                 renderMainmenu();
                 break;
             case RUNNING:
+                timeReset = false;
+                timer++;
+                if (timer > 120) timer = 0;
+                gameover = false;
                 renderRunning();
                 break;
             case PAUSED:
                 renderPaused();
                 break;
             case GAMEOVER:
-                renderGameover();
+                resetTimer();
+                timer++;
+
+                if (timer >= 300) timer = 300;
+
+                if ((timer % 300) == 0) {
+                    renderGameover();
+                } else {
+                    renderRunning();
+                }
+
+
                 break;
             case OPTIONS:
                 renderOptions();
@@ -120,58 +133,62 @@ public class Renderer {
         }
 
 
+    }
 
+    private void resetTimer() {
 
+        if (!timeReset) {
+            timer = 0;
+            timeReset = true;
+        }
 
     }
 
-    private void renderStart(){
-        runTime = Gdx.graphics.getDeltaTime();
+    private void renderStart(float runTime) {
+
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, logo);
+        glyphLayout.setText(AssetLoader.font, logoText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2, updater.getLogo().y);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getLogo().y);
         glyphLayout.setText(AssetLoader.font, "start");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 550);
-
 
 
         glyphLayout.setText(AssetLoader.font, "shop");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 700);
 
         glyphLayout.setText(AssetLoader.font, "info");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 850);
 
         glyphLayout.setText(AssetLoader.font, "options");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 1000);
 
-        /*batch.draw(AssetLoader.wireframeAnimation.getKeyFrame(runTime),
-                540 - 128, updater.getLogo().y - 450);*/
+        batch.draw(AssetLoader.wireframeAnimation.getKeyFrame(runTime),
+                540 - 256, updater.getLogo().y - 550, 512, 512);
 
         batch.end();
 
 
     }
 
-    private void renderMainmenu(){
+    private void renderMainmenu() {
 
     }
 
-    private void renderRunning(){
+    private void renderRunning() {
 
-        runTime += Gdx.graphics.getDeltaTime();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(1, 0, 0, 1);
@@ -186,8 +203,11 @@ public class Renderer {
         spacejunk5 = updater.getSpacejunk5();
 
         batch.begin();
+
+
         //drawBackground();
         batch.enableBlending();
+
         batch.setColor(r, g, b, 1);
         drawPlanet();
         batch.setColor(r2, g2, b2, 1);
@@ -203,6 +223,9 @@ public class Renderer {
         drawSpacejunk();
         //fish
         batch.setColor(1, 1, 1, 1);
+
+        drawMoney();
+
         drawSpacejunk2();
         drawSpacejunk3();
         drawSpacejunk4();
@@ -211,26 +234,34 @@ public class Renderer {
         //ui
 
         drawHealth();
+        drawSpeed();
 
-        /*if(updater.getSpacecraft().getHealth() < 2){
 
-        glyphLayout.setText(AssetLoader.font, "HULL CONDITION\n  CRITICAL");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
-                VIRTUAL_HEIGHT/2);
+        if (spacecraft.getHealth() < 2) {
+            if ((timer % 60) == 0) {
+                warningSwitch = true;
+            }
+            if (warningSwitch) {
+                drawWarning();
+            }
+            if ((timer % 120) == 0) {
+                warningSwitch = false;
+            }
+        }
 
-        }*/
 
-        if(devEnabled)AssetLoader.font.draw(batch,
-                "Distance: " + Math.round(updater.getDistance()),
-                50, 1800);
+        if (devEnabled) {
+            AssetLoader.font.draw(batch, "Distance: " + updater.getDistance(), 50, 1800);
+            AssetLoader.font.draw(batch, "Speed: " + updater.getSpeed(), 50, 1650);
+        }
+
         batch.end();
         shapeRenderer.end();
 
 
     }
 
-    private void renderPaused(){
+    private void renderPaused() {
 
     }
 
@@ -240,31 +271,31 @@ public class Renderer {
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, info);
+        glyphLayout.setText(AssetLoader.font, infoText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2, updater.getLogo().y);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getLogo().y);
 
         glyphLayout.setText(AssetLoader.font, "COMING TO GOOGLE PLAY\n" +
                 "When it's ready...");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
-                updater.getLogo().y-175);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getLogo().y - 175);
 
         glyphLayout.setText(AssetLoader.font, "MUSIC & PROGRAMMING\n" +
                 "       IKIS");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
-                updater.getLogo().y-500);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getLogo().y - 500);
 
         glyphLayout.setText(AssetLoader.font, "GRAPHIC DESIGNER\n" +
                 "  EELIS OTSAMO");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
-                updater.getLogo().y-750);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getLogo().y - 750);
 
         glyphLayout.setText(AssetLoader.font, "BACK");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 1000);
 
         batch.end();
@@ -278,98 +309,97 @@ public class Renderer {
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, shop);
+        glyphLayout.setText(AssetLoader.font, shopText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2, updater.getLogo().y);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getLogo().y);
 
         glyphLayout.setText(AssetLoader.font, "OPTIONS");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 850);
 
         glyphLayout.setText(AssetLoader.font, "PLAY");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 1000);
 
-        glyphLayout.setText(AssetLoader.font,DataHandler.money+"$");
+        glyphLayout.setText(AssetLoader.font, DataHandler.money + "$");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 150);
 
-        glyphLayout.setText(AssetLoader.font,"Upgrade\n"
-        + DataHandler.healthLevel * 100);
+        glyphLayout.setText(AssetLoader.font, "Upgrade\n"
+                + DataHandler.healthLevel * 100);
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, 128,
                 updater.getLogo().y - 600);
 
-        glyphLayout.setText(AssetLoader.font,"Upgrade\n"
-        + DataHandler.speedLevel * 75);
+        glyphLayout.setText(AssetLoader.font, "Upgrade\n"
+                + DataHandler.speedLevel * 75);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, VIRTUAL_WIDTH/2 + 128,
+        AssetLoader.font.draw(batch, glyphLayout, VIRTUAL_WIDTH / 2 + 128,
                 updater.getLogo().y - 600);
-
-
 
 
         batch.draw(AssetLoader.armorUp3, 128, updater.getLogo().y - 550);
 
-        batch.draw(AssetLoader.speedUp1, VIRTUAL_WIDTH/2 + 128, updater.getLogo().y - 550);
+        batch.draw(AssetLoader.speedUp1, VIRTUAL_WIDTH / 2 + 128, updater.getLogo().y - 550);
 
 
         batch.end();
     }
 
-    private void renderGameover(){
+    private void renderGameover() {
 
+        AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
         startTime = TimeUtils.nanoTime();
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, gameover);
+        glyphLayout.setText(AssetLoader.font, gameoverText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y);
 
         glyphLayout.setText(AssetLoader.font, "Score: " + updater.getDistance());
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 300);
 
         glyphLayout.setText(AssetLoader.font, "SHOP");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 700);
 
         glyphLayout.setText(AssetLoader.font, "OPTIONS");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 850);
 
         glyphLayout.setText(AssetLoader.font, "PLAY");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 1000);
 
         batch.end();
 
     }
 
-    private void renderOptions(){
+    private void renderOptions() {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, options);
+        glyphLayout.setText(AssetLoader.font, optionsText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2, updater.getLogo().y);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getLogo().y);
 
         glyphLayout.setText(AssetLoader.font, "PLAY");
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth)/2,
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 1000);
 
         batch.end();
@@ -379,8 +409,8 @@ public class Renderer {
 
     private void drawBackground() {
 
-        for(int i = 1; i < 1080; i += 256){
-            for(int j = 1; j < 1920; j += 256){
+        for (int i = 1; i < 1080; i += 256) {
+            for (int j = 1; j < 1920; j += 256) {
 
                 batch.draw(AssetLoader.bg, i, j);
 
@@ -393,37 +423,36 @@ public class Renderer {
         armor = DataHandler.healthLevel;
         speed = DataHandler.speedLevel;
 
-        if(armor >= 3 && armor < 5) {
+        if (armor >= 3 && armor < 5) {
             spacecraftTexture = AssetLoader.spacecraft;
 
-            if(spacecraft.getMovingLeft()){
+            if (spacecraft.getMovingLeft()) {
                 spacecraftTexture = AssetLoader.spacecraftLeft;
-            } else if(spacecraft.getMovingRight()){
+            } else if (spacecraft.getMovingRight()) {
                 spacecraftTexture = AssetLoader.spacecraftRight;
             }
 
-        } else if(armor >= 5 && armor < 10){
+        } else if (armor >= 5 && armor < 10) {
 
             spacecraftTexture = AssetLoader.armorTier1;
 
-            if(spacecraft.getMovingLeft()){
+            if (spacecraft.getMovingLeft()) {
                 spacecraftTexture = AssetLoader.armorTier1Left;
-            } else if(spacecraft.getMovingRight()){
+            } else if (spacecraft.getMovingRight()) {
                 spacecraftTexture = AssetLoader.armorTier1Right;
             }
 
-        } else if(armor == 10){
+        } else if (armor == 10) {
 
             spacecraftTexture = AssetLoader.armorTier2;
 
-            if(spacecraft.getMovingLeft()){
+            if (spacecraft.getMovingLeft()) {
                 spacecraftTexture = AssetLoader.armorTier2Left;
-            } else if(spacecraft.getMovingRight()){
+            } else if (spacecraft.getMovingRight()) {
                 spacecraftTexture = AssetLoader.armorTier2Right;
             }
 
         }
-
 
 
         batch.draw(spacecraftTexture,
@@ -435,7 +464,7 @@ public class Renderer {
                 //spacecraft.getHitbox().height
         );
 
-        if(devEnabled){
+        if (devEnabled) {
 
             shapeRenderer.rect(
                     spacecraft.getPosition().x,
@@ -447,7 +476,7 @@ public class Renderer {
     }
 
     //COW
-    private void drawSpacejunk(){
+    private void drawSpacejunk() {
 
         //batch.draw(cow, 100, 100, 128, 128, 256, 256, 1, 1, rotation, false);
 
@@ -462,7 +491,7 @@ public class Renderer {
         );
 
         //TODO make spinning if time
-        if(spacejunk.getDestroyed()){
+        if (spacejunk.getDestroyed()) {
             batch.draw(AssetLoader.fragment1,
                     spacejunk.getFragment1().x,
                     spacejunk.getFragment1().y,
@@ -478,7 +507,7 @@ public class Renderer {
         }
 
         //DEV
-        if(devEnabled){
+        if (devEnabled) {
 
             //spacejunk1
             shapeRenderer.rect(
@@ -521,7 +550,7 @@ public class Renderer {
                 1, 1, rotation2, true
         );
 
-        if(spacejunk2.getDestroyed()){
+        if (spacejunk2.getDestroyed()) {
             batch.draw(AssetLoader.fragment1,
                     spacejunk2.getFragment1().x,
                     spacejunk2.getFragment1().y,
@@ -537,7 +566,7 @@ public class Renderer {
         }
 
         //DEV
-        if(devEnabled){
+        if (devEnabled) {
 
             shapeRenderer.rect(
                     spacejunk2.getPosition().x,
@@ -566,7 +595,7 @@ public class Renderer {
     }
 
     //can
-    private void drawSpacejunk3(){
+    private void drawSpacejunk3() {
 
         batch.draw(AssetLoader.can,
                 spacejunk3.getPosition().x,
@@ -578,7 +607,7 @@ public class Renderer {
                 1, 1, rotation2, true
         );
 
-        if(spacejunk3.getDestroyed()){
+        if (spacejunk3.getDestroyed()) {
             batch.draw(AssetLoader.fragment1,
                     spacejunk3.getFragment1().x,
                     spacejunk3.getFragment1().y,
@@ -593,7 +622,7 @@ public class Renderer {
                     32, 32);
         }
 
-        if(devEnabled){
+        if (devEnabled) {
 
             shapeRenderer.rect(
                     spacejunk3.getPosition().x,
@@ -619,8 +648,9 @@ public class Renderer {
         }
 
     }
+
     //CAN
-    private void drawSpacejunk4(){
+    private void drawSpacejunk4() {
 
         batch.draw(AssetLoader.junk4,
                 spacejunk4.getPosition().x,
@@ -629,7 +659,7 @@ public class Renderer {
                 spacejunk4.getHitbox().height
         );
 
-        if(spacejunk4.getDestroyed()){
+        if (spacejunk4.getDestroyed()) {
             batch.draw(AssetLoader.fragment1,
                     spacejunk4.getFragment1().x,
                     spacejunk4.getFragment1().y,
@@ -646,7 +676,7 @@ public class Renderer {
 
         //DEV
 
-        if(devEnabled){
+        if (devEnabled) {
 
             shapeRenderer.rect(
                     spacejunk4.getPosition().x,
@@ -674,7 +704,7 @@ public class Renderer {
     }
 
     //TIRE
-    private void drawSpacejunk5(){
+    private void drawSpacejunk5() {
 
         batch.draw(AssetLoader.junk5,
                 spacejunk5.getPosition().x,
@@ -683,7 +713,7 @@ public class Renderer {
                 spacejunk5.getHitbox().height
         );
 
-        if(spacejunk5.getDestroyed()){
+        if (spacejunk5.getDestroyed()) {
             batch.setColor(0.5f, 0.5f, 0.5f, 1);
             batch.draw(AssetLoader.fragment1,
                     spacejunk5.getFragment1().x,
@@ -697,11 +727,11 @@ public class Renderer {
                     spacejunk5.getFragment3().x,
                     spacejunk5.getFragment3().y,
                     32, 32);
-            batch.setColor(1,1,1,1);
+            batch.setColor(1, 1, 1, 1);
         }
 
         //DEV
-        if(devEnabled){
+        if (devEnabled) {
 
             shapeRenderer.rect(
                     spacejunk5.getPosition().x,
@@ -728,26 +758,121 @@ public class Renderer {
 
     }
 
-    public void drawHealth(){
+    private void drawMoney(){
 
-        for(int i = 220; i < 860 - 1; i += 64){
-            batch.draw(AssetLoader.healthBarFrame, i, 128, 64, 64);
+/*
+        batch.draw(AssetLoader.coin, updater.getCoin().getPosition().x,
+                updater.getCoin().getPosition().y, updater.getCoin().getHitbox().width,
+                updater.getCoin().getHitbox().height);
+*/
 
+
+        batch.draw(AssetLoader.coinSprite,
+                updater.getCoin().getPosition().x,
+                updater.getCoin().getPosition().y,
+                updater.getCoin().getHitbox().width / 2,
+                updater.getCoin().getHitbox().height / 2,
+                updater.getCoin().getHitbox().width,
+                updater.getCoin().getHitbox().height,
+                1, 1, rotation2, true
+        );
+
+
+
+        batch.draw(AssetLoader.cashstack, updater.getCashstack().getPosition().x,
+                updater.getCashstack().getPosition().y, updater.getCashstack().getHitbox().height,
+                updater.getCashstack().getHitbox().width);
+
+        if(devEnabled){
+
+            shapeRenderer.rect(
+                    updater.getCoin().getPosition().x,
+                    updater.getCoin().getPosition().y,
+                    updater.getCoin().getHitbox().width,
+                    updater.getCoin().getHitbox().height);
+
+            shapeRenderer.rect(
+                    updater.getCashstack().getPosition().x,
+                    updater.getCashstack().getPosition().y,
+                    updater.getCashstack().getHitbox().width,
+                    updater.getCashstack().getHitbox().height);
+        }
+    }
+
+    private void drawWarning() {
+
+
+        AssetLoader.font.setColor(1, 0.3f, 0.3f, 1);
+        glyphLayout.setText(AssetLoader.font, "WARNING");
+        glyphWidth = glyphLayout.width;
+        glyphHeight = glyphLayout.height;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                (VIRTUAL_HEIGHT - glyphHeight) / 2);
+        AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
+    }
+
+    public void drawHealth() {
+
+        for (int i = 220; i < 860 - 1; i += 64) {
+
+            if (updater.getSpacecraft().getHealth() < 3
+                    && updater.getSpacecraft().getHealth() > 1) {
+                batch.setColor(1f, 0.5f, 0.5f, 1);
+            } else if (updater.getSpacecraft().getHealth() < 2) {
+                batch.setColor(1, 0, 0, 1);
+            } else {
+                batch.setColor(1, 1, 1, 1);
             }
 
-      /*  for(int i = 0; i < 640 * (updater.getSpacecraft().getHealth() * 0.1) - 1; i += 64){
-            batch.draw(AssetLoader.healthBar, i + 220, 128, 64, 64);
-
-
-        }*/
-
-        for(int i = 0; i < 640 * (updater.getSpacecraft().getHealth() * 0.1) - 1; i += 64){
-            batch.draw(AssetLoader.healthBar, i + 220, 128, 64, 64);
-
-
+            batch.draw(AssetLoader.healthFrame, i, 64, 64, 64);
         }
 
+        for (int i = 0; i < 640 * (updater.getSpacecraft().getHealth() * 0.1) - 1; i += 64) {
 
+            if (updater.getSpacecraft().getHealth() < 3
+                    && updater.getSpacecraft().getHealth() > 1) {
+                batch.setColor(1f, 0.5f, 0.5f, 1);
+            } else if (updater.getSpacecraft().getHealth() < 2) {
+                batch.setColor(1, 0, 0, 1);
+            } else {
+                batch.setColor(1, 1, 1, 1);
+            }
+            batch.draw(AssetLoader.health, i + 220, 64, 64, 64);
+        }
+
+        batch.setColor(1, 1, 1, 1);
+
+        glyphLayout.setText(AssetLoader.fontSmall, "HULL");
+        glyphWidth = glyphLayout.width;
+        //AssetLoader.fontSmall.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, 160);
+        AssetLoader.fontSmall.draw(batch, glyphLayout, 220, 160);
+
+        //batch.draw(AssetLoader.armorUp3, 128, 128, 64, 64);
+    }
+
+    private void drawSpeed() {
+
+        batch.setColor(1, 1, 1, 1);
+        batch.draw(AssetLoader.speedFrameLeft, 220, 175, 64, 64);
+
+        for (int i = 286; i < 796 - 1; i += 64) {
+            batch.draw(AssetLoader.speedFrameMiddle, i - 2, 175, 64, 64);
+        }
+
+        batch.draw(AssetLoader.speedFrameRight, 796, 175, 64, 64);
+
+
+        for (int i = 0; i < updater.getSpeed() * 0.008; i++) {
+
+            batch.draw(AssetLoader.speed, 226 + i * 8, 175, 64, 64);
+        }
+
+        AssetLoader.fontSmall.setColor(1, 0.3f, 0.3f, 1);
+        glyphLayout.setText(AssetLoader.fontSmall, "SPEED");
+        glyphWidth = glyphLayout.width;
+        //AssetLoader.fontSmall.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, 270);
+        AssetLoader.fontSmall.draw(batch, glyphLayout, 220, 270);
+        AssetLoader.fontSmall.setColor(0.141f, 0.848f, 0.407f, 1f);
 
     }
 
@@ -759,37 +884,37 @@ public class Renderer {
         batch.draw(AssetLoader.planet, planetPosition.x, planetPosition.y);
     }
 
-    private void handleCalc(){
+    private void handleCalc() {
 
         planetPosition.y += -0.5;
         planetPosition.x += 0.1;
         asteroidPosition.y += -1;
         asteroidPosition.x -= 0.3;
-        if(planetPosition.y < -300){
-            planetPosition.y = random.nextInt(3000- 2500) + 2500;
+        if (planetPosition.y < -300) {
+            planetPosition.y = random.nextInt(3000 - 2500) + 2500;
             planetPosition.x = random.nextInt(1080);
 
             r = random.nextFloat();
-            if(r > 0.25f)r = 0.25f;
+            if (r > 0.25f) r = 0.25f;
             g = random.nextFloat();
-            if(g > 0.25f)g = 0.25f;
+            if (g > 0.25f) g = 0.25f;
             b = random.nextFloat();
-            if(b > 0.25f)b = 0.25f;
+            if (b > 0.25f) b = 0.25f;
         }
-        if(asteroidPosition.y < -300){
+        if (asteroidPosition.y < -300) {
             asteroidPosition.y = random.nextInt(3000 - 2500) + 2500;
 
             r2 = random.nextFloat();
-            if(r2 > 0.25f)r2 = 0.25f;
+            if (r2 > 0.25f) r2 = 0.25f;
             g2 = random.nextFloat();
-            if(g2 > 0.25f)g2 = 0.25f;
+            if (g2 > 0.25f) g2 = 0.25f;
             b2 = random.nextFloat();
-            if(b2 > 0.25f)b2 = 0.25f;
+            if (b2 > 0.25f) b2 = 0.25f;
 
         }
 
         rotation2 -= 0.5;
-        if(rotation2 < 0f)rotation2 = 360f;
+        if (rotation2 < 0f) rotation2 = 360f;
 
     }
 }

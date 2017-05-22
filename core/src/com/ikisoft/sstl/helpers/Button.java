@@ -17,7 +17,6 @@ public class Button {
     }
 
     public boolean isDown(int x, int y, float posx, float posy) {
-
         if (x > posx - (size.x / 2) && x < posx + (size.x / 2)) {
             if (y > posy - (size.y / 2) && y < posy + (size.y / 2)) {
                 return true;

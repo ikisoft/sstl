@@ -2,6 +2,7 @@ package com.ikisoft.sstl.helpers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -22,8 +23,8 @@ public class AssetLoader {
             spacecraft, spacecraftLeft, spacecraftRight,
             asteroid, planet,
             bg,
-            junk, junk2, junk3, junk4, junk5, junk6, junk7, junk8,
-            healthFrame, health,
+            junk, junk2, junk3, junk4, junk5, junk6, junk7, junk8, coin, cashstack,
+            healthFrame, health, speedFrameLeft, speedFrameMiddle, speedFrameRight, speed,
             fragment1, fragment2, fragment3,
             wireframe1, wireframe2, wireframe3, wireframe4,
             wireframe5, wireframe6, wireframe7, wireframe8,
@@ -36,11 +37,18 @@ public class AssetLoader {
             soundMuted, musicMuted;
 
     public static Sprite
-            cow, fish, can, healthBarFrame, healthBar;
+            cow, fish, can, healthBarFrame, healthBar, coinSprite;
 
     public static BitmapFont font, fontSmall;
 
-    public static Music theme;
+    public static Music theme, lowhealth;
+
+    public static Sound
+            click,
+            spacecraftHit, spacecraftHit2, spacecraftHit3, spacecraftHit4, spacecraftHit5,
+            explosion;
+
+    public static float volume, lowhealthVolume;
 
 
 
@@ -66,27 +74,35 @@ public class AssetLoader {
         junk6 = new TextureRegion(texture, 1280, 768, 256, 256);
         junk7 = new TextureRegion(texture, 1536, 768, 256, 256);
         junk8 = new TextureRegion(texture, 1792, 768, 256, 256);
+        cashstack = new TextureRegion(texture, 2048, 768, 256, 256 );
+        coin = new TextureRegion(texture, 2304, 768, 256, 256 );
+        coinSprite = new Sprite(coin);
+
         healthFrame = new TextureRegion(texture, 0, 1024, 256, 256);
-        healthBarFrame = new Sprite(healthFrame);
         health = new TextureRegion(texture, 256, 1024, 256, 256);
-        healthBar = new Sprite(health);
+
+        speedFrameLeft = new TextureRegion(texture, 512, 1024, 256, 256);
+        speedFrameMiddle = new TextureRegion(texture, 768, 1024, 256, 256);
+        speedFrameRight = new TextureRegion(texture, 1024, 1024, 256, 256);
+        speed = new TextureRegion(texture, 1280, 1024, 256, 256);
+
         fragment1 = new TextureRegion(texture, 0, 1536, 256, 256);
         fragment2 = new TextureRegion(texture, 256, 1536, 256, 256);
         fragment3 = new TextureRegion(texture, 512, 1536, 256, 256);
 
-        wireframe1 = new TextureRegion(texture, 0, 1796, 256, 256);
-        wireframe2 = new TextureRegion(texture, 256, 1796, 256, 256);
-        wireframe3 = new TextureRegion(texture, 512, 1796, 256, 256);
-        wireframe4 = new TextureRegion(texture, 768, 1796, 256, 256);
-        wireframe5 = new TextureRegion(texture, 1024, 1796, 256, 256);
-        wireframe6 = new TextureRegion(texture, 1280, 1796, 256, 256);
-        wireframe7 = new TextureRegion(texture, 1536, 1796, 256, 256);
-        wireframe8 = new TextureRegion(texture, 1792, 1796, 256, 256);
+        wireframe1 = new TextureRegion(texture, 0, 1792, 256, 256);
+        wireframe2 = new TextureRegion(texture, 256, 1792, 256, 256);
+        wireframe3 = new TextureRegion(texture, 512, 1792, 256, 256);
+        wireframe4 = new TextureRegion(texture, 768, 1792, 256, 256);
+        wireframe5 = new TextureRegion(texture, 1024, 1792, 256, 256);
+        wireframe6 = new TextureRegion(texture, 1280, 1792, 256, 256);
+        wireframe7 = new TextureRegion(texture, 1536, 1792, 256, 256);
+        wireframe8 = new TextureRegion(texture, 1792, 1792, 256, 256);
 
         TextureRegion[] wireFrame = {wireframe1, wireframe2, wireframe3,
         wireframe4, wireframe5, wireframe6, wireframe7, wireframe8};
-        wireframeAnimation = new Animation(0.3f, wireFrame);
-        wireframeAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+        wireframeAnimation = new Animation(0.5f, wireFrame);
+        wireframeAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         speedTier1 = new TextureRegion(texture, 0, 2048, 256, 256);
         speedTier1Left = new TextureRegion(texture, 256, 2048, 256, 256);
@@ -122,15 +138,25 @@ public class AssetLoader {
         font.getData().setScale(2f, 2f);
         font.setColor(0.141f, 0.848f, 0.407f, 1f);
         fontSmall = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
-        fontSmall.getData().setScale(1.5f, 1.5f);
+        fontSmall.getData().setScale(1f, 1f);
         fontSmall.setColor(0.141f, 0.848f, 0.407f, 1f);
 
 
         theme = Gdx.audio.newMusic(Gdx.files.internal("sounds/hello_world_msu.mp3"));
 
-        theme.setVolume(0.7f);
+        theme.setVolume(0.5f);
         theme.setLooping(true);
-        if (!DataHandler.musicMuted) theme.play();
+        //if (!DataHandler.musicMuted) theme.play();
+
+        spacecraftHit = Gdx.audio.newSound(Gdx.files.internal("sounds/heavymetalhit_mono.wav"));
+        spacecraftHit2 = Gdx.audio.newSound(Gdx.files.internal("sounds/heavymetalhit2.wav"));
+        spacecraftHit3 = Gdx.audio.newSound(Gdx.files.internal("sounds/metalhit3.wav"));
+        spacecraftHit4 = Gdx.audio.newSound(Gdx.files.internal("sounds/splash.wav"));
+        spacecraftHit5 = Gdx.audio.newSound(Gdx.files.internal("sounds/metalhit5.wav"));
+        lowhealth = Gdx.audio.newMusic(Gdx.files.internal("sounds/conditioncritical_speech2.wav"));
+        lowhealth.setLooping(false);
+        click = Gdx.audio.newSound(Gdx.files.internal("sounds/menuclick2.wav"));
+        explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/space_explosion.wav"));
 
 
     }
@@ -139,6 +165,7 @@ public class AssetLoader {
 
         texture.dispose();
         theme.dispose();
+        lowhealth.dispose();
         font.dispose();
         fontSmall.dispose();
     }

@@ -15,6 +15,7 @@ public class InputHandler implements InputProcessor {
     private float screenWidth;
     private float screenHeight;
     private Button menuButton, shopButton;
+    float delta;
 
     public InputHandler(Updater updater, float screenWidth, float screenHeight){
 
@@ -30,9 +31,20 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        /*if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             updater.resetGame();
             return true;
+         }*/
+        System.out.println("keydown");
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+
+            updater.getSpacecraft().setMovingLeftTrue();
+            return true;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            updater.getSpacecraft().setMovingRightTrue();
+
+           return true;
         }
 
         return false;
@@ -40,6 +52,15 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
+        System.out.println("keyup");
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            updater.getSpacecraft().setMovingLeftFalse();
+            return true;
+        }else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            updater.getSpacecraft().setMovingRightFalse();
+            return true;
+        }
 
         return false;
     }
@@ -94,7 +115,6 @@ public class InputHandler implements InputProcessor {
                 }
 
                 if(menuButton.isDown(x, y, 540, 1430)){
-
                     updater.resetGame();
                 }
 
@@ -103,7 +123,6 @@ public class InputHandler implements InputProcessor {
             case INFO:
 
                 if(menuButton.isDown(x, y, 540, 1430)){
-
                     updater.setGameState(Updater.GameState.START);
             }
 
@@ -112,6 +131,7 @@ public class InputHandler implements InputProcessor {
 
             case SHOP:
 
+                //HEALTH LEVEL UP
                 if(shopButton.isDown(x, y, 256, 800)){
 
                     if(DataHandler.healthLevel < 10){
@@ -122,15 +142,11 @@ public class InputHandler implements InputProcessor {
                                 DataHandler.money -= 100 * DataHandler.healthLevel;
 
                             }
-
-
-
                         }
                     }
-
-                    System.out.println("healthup");
                 }
 
+                //SPEED LEVEL UP
                 if(shopButton.isDown(x, y, 780, 800)){
 
                     if(DataHandler.speedLevel < 10) {
@@ -143,8 +159,6 @@ public class InputHandler implements InputProcessor {
                             }
                         }
                     }
-
-                    System.out.println("speedup");
                 }
 
                 if(menuButton.isDown(x, y, 540, 1430)){

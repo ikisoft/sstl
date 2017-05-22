@@ -1,9 +1,12 @@
 package com.ikisoft.sstl.main;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
+import com.ikisoft.sstl.gameobjects.Money;
 import com.ikisoft.sstl.gameobjects.Spacecraft;
 import com.ikisoft.sstl.gameobjects.Spacejunk;
 import com.ikisoft.sstl.helpers.AssetLoader;
@@ -17,12 +20,13 @@ import com.ikisoft.sstl.helpers.LerpHandler;
 public class Updater {
 
     long startTime;
-    long distance;
+    long distance, speed;
     private GameState gameState;
     private Spacecraft spacecraft;
     private Spacejunk spacejunk, spacejunk2, spacejunk3, spacejunk4, spacejunk5;
+    private Money coin, cashstack;
     private LerpHandler logo;
-    private boolean dataSaved;
+    private boolean dataSaved, gameover, lowhealthPlayed;
 
     public enum GameState{
 
@@ -46,16 +50,23 @@ public class Updater {
         //tire
         spacejunk5 = new Spacejunk(256, 256, this);
         //start y  2300
+        coin = new Money(32, 32, this, 10);
+        cashstack = new Money(64, 64, this, 100);
         logo = new LerpHandler(200, 2600, 200, 1536);
         distance = 0;
+        speed = 1;
 
         startTime = TimeUtils.nanoTime();
         dataSaved = false;
+        lowhealthPlayed = false;
 
 
     }
 
     public void update(float delta){
+
+        if(speed <= 0)speed = 1;
+        if(speed > 10000)speed = 10000;
 
         switch (gameState){
             case START:
@@ -71,11 +82,15 @@ public class Updater {
             case PAUSED:
                 break;
             case GAMEOVER:
-                if(!dataSaved){
-                    dataSaved = true;
+
+                AssetLoader.lowhealth.stop();
+                if(!gameover){
                     save();
-                    System.out.println("saved");
+                    //AssetLoader.explosion.play();
                 }
+
+                gameover = true;
+
                 updateGameover(delta);
                 break;
             case OPTIONS:
@@ -109,7 +124,10 @@ public class Updater {
     private void updateRunning(float delta) {
 
         distance += 1;
+        speed += 1;
 
+        coin.update(delta);
+        cashstack.update(delta);
         spacecraft.update(delta);
         spacejunk.update(delta);
         spacejunk2.update(delta);
@@ -119,7 +137,12 @@ public class Updater {
         updateCollision();
 
 
+        //Play warning sound
+        if(spacecraft.getHealth() < 2 && !lowhealthPlayed){
+            AssetLoader.lowhealth.play();
+            lowhealthPlayed = true;
 
+        }
     }
 
     private void updatePaused(){
@@ -127,12 +150,16 @@ public class Updater {
     }
 
     private void updateGameover(float delta){
+
+
+        speed -= 10;
+        if(speed <= 0)speed = 1;
+
         spacejunk.update(delta);
         spacejunk2.update(delta);
         spacejunk3.update(delta);
         spacejunk4.update(delta);
         spacejunk5.update(delta);
-        updateCollision();
         //resetGame();
     }
 
@@ -145,16 +172,26 @@ public class Updater {
         spacejunk5.reset();
         gameState = GameState.RUNNING;
         distance = 0;
+        speed = 0;
         startTime = 0;
+        lowhealthPlayed = false;
+        gameover = false;
     }
 
     private void updateCollision() {
 
+        //Cow
         if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk.getHitbox())) {
 
+
+
             if (!spacejunk.getDestroyed()) {
+
                 spacejunk.setDestroyed();
                 spacecraft.setHealth();
+                speed -= 500;
+
+                AssetLoader.spacecraftHit.play();
 
             } else if (spacecraft.getHealth() == 0){
                 spacejunk.setDestroyed();
@@ -162,11 +199,15 @@ public class Updater {
 
             }
 
+            //fish
         } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk2.getHitbox())) {
 
             if (!spacejunk2.getDestroyed()) {
                 spacejunk2.setDestroyed();
                 spacecraft.setHealth();
+                speed -= 100;
+
+                AssetLoader.spacecraftHit3.play();
 
             } else if (spacecraft.getHealth() == 0){
                 spacejunk2.setDestroyed();
@@ -176,11 +217,15 @@ public class Updater {
 
             }
 
+            //can
         } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk3.getHitbox())) {
 
             if (!spacejunk3.getDestroyed()) {
                 spacejunk3.setDestroyed();
                 spacecraft.setHealth();
+                speed -= 150;
+
+                AssetLoader.spacecraftHit5.play();
 
             } else if (spacecraft.getHealth() == 0){
                 spacejunk3.setDestroyed();
@@ -188,23 +233,31 @@ public class Updater {
 
             }
 
+            //apple
         } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk4.getHitbox())) {
+
 
             if (!spacejunk4.getDestroyed()) {
                 spacejunk4.setDestroyed();
                 spacecraft.setHealth();
+                speed -= 100;
+
+                AssetLoader.spacecraftHit4.play();
 
             } else if (spacecraft.getHealth() == 0){
                 spacejunk4.setDestroyed();
                 gameState = GameState.GAMEOVER;
 
             }
-
+        //Tire
         } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk5.getHitbox())) {
 
             if (!spacejunk5.getDestroyed()) {
                 spacejunk5.setDestroyed();
                 spacecraft.setHealth();
+                speed -= 350;
+
+                AssetLoader.spacecraftHit2.play();
 
             } else if (spacecraft.getHealth() == 0){
                 spacejunk5.setDestroyed();
@@ -216,7 +269,6 @@ public class Updater {
 
     private void save(){
         DataHandler.money += distance / 10;
-        System.out.println("money: " + DataHandler.money);
         DataHandler.save();
     }
 
@@ -245,6 +297,14 @@ public class Updater {
         return spacejunk5;
     }
 
+    public Money getCoin(){
+        return coin;
+    }
+
+    public Money getCashstack(){
+        return cashstack;
+    }
+
     public GameState getGameState(){
         return gameState;
     }
@@ -261,8 +321,13 @@ public class Updater {
         return logo;
     }
 
-    public float getDistance(){
+    public long getDistance(){
         return distance;
+
+    }
+
+    public long getSpeed(){
+        return speed;
 
     }
 

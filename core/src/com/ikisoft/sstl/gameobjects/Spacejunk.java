@@ -1,5 +1,6 @@
 package com.ikisoft.sstl.gameobjects;
 
+import com.ikisoft.sstl.helpers.AssetLoader;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ikisoft.sstl.main.Updater;
@@ -45,7 +46,7 @@ public class Spacejunk {
         fragment3.set(position.cpy());
         hitbox.setPosition(position.x, position.y);
         destroyed = false;
-        randomSpeed = random.nextInt((int) (10 + updater.getDistance() / 100));
+        randomSpeed = random.nextInt((int) (10 + updater.getSpeed() / 100));
 
     }
 
@@ -103,7 +104,15 @@ public class Spacejunk {
     }
 
     public void setDestroyed(){
+
+
+        if(updater.getGameState() == Updater.GameState.RUNNING && !destroyed){
+
+
+        }
+
         destroyed = true;
+
     }
 
     public Vector2 getFragment1(){

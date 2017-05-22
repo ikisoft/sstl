@@ -23,7 +23,7 @@ public class DataHandler {
         money = prefs.getInteger("money");
         //highscore = prefs.getInteger("highscore");
         healthLevel = prefs.getInteger("healthlevel");
-        if(healthLevel == 0){
+        if(healthLevel < 3){
             healthLevel = 3;
         }
 /*        speedLevel = prefs.getInteger("speedlevel");
@@ -32,8 +32,8 @@ public class DataHandler {
         }*/
 
         speedLevel = prefs.getInteger("speedlevel");
-        if(speedLevel > 1){
-            speedLevel = 1;
+        if(speedLevel < 3){
+            speedLevel = 3;
         }
     }
 

@@ -14,7 +14,7 @@ import com.ikisoft.sstl.main.Updater;
 
 public class SSTL extends ApplicationAdapter {
 
-	private float delta;
+	private float delta, runTime;
 	private int screenWidth, screenHeight;
 	private Updater updater;
 	private Renderer renderer;
@@ -42,15 +42,18 @@ public class SSTL extends ApplicationAdapter {
 				screenWidth, screenHeight)));
 		Gdx.input.setInputProcessor(multiplexer);
 
+		runTime = 0;
+
 	}
 
 	@Override
 	public void render () {
 		delta = Gdx.graphics.getDeltaTime() * 60;
+		runTime += Gdx.graphics.getDeltaTime();
 		if(delta > 1)delta = 1;
 		if(delta < 0.033)delta = 0.033f;
 		updater.update(delta);
-		renderer.render();
+		renderer.render(runTime);
 
 	}
 	
