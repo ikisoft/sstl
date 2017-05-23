@@ -26,7 +26,8 @@ public class Updater {
     private Spacejunk spacejunk, spacejunk2, spacejunk3, spacejunk4, spacejunk5;
     private Money coin, cashstack;
     private LerpHandler logo;
-    private boolean dataSaved, gameover, lowhealthPlayed;
+    private boolean dataSaved, gameover, lowhealthPlayed, devEnabled;
+    private int moneyThisRun;
 
     public enum GameState{
 
@@ -40,9 +41,9 @@ public class Updater {
 
         spacecraft = new Spacecraft(540, 384, 128, 128);
         //cow
-        spacejunk = new Spacejunk(300, 300, this);
+        spacejunk = new Spacejunk(200, 200, this);
         //fish
-        spacejunk2 = new Spacejunk(200, 200, this);
+        spacejunk2 = new Spacejunk(150, 150, this);
         //can
         spacejunk3 = new Spacejunk(150, 150, this);
         //apple
@@ -50,11 +51,12 @@ public class Updater {
         //tire
         spacejunk5 = new Spacejunk(256, 256, this);
         //start y  2300
-        coin = new Money(32, 32, this, 10);
-        cashstack = new Money(64, 64, this, 100);
+        coin = new Money(40, 40, this, 10, 2050);
+        cashstack = new Money(100, 100, this, 50, 5000);
         logo = new LerpHandler(200, 2600, 200, 1536);
         distance = 0;
         speed = 1;
+        moneyThisRun = 0;
 
         startTime = TimeUtils.nanoTime();
         dataSaved = false;
@@ -126,8 +128,14 @@ public class Updater {
         distance += 1;
         speed += 1;
 
+        if(speed > 1000){
+            cashstack.update(delta);
+        } else if (speed < 1000){
+            cashstack.reset();
+        }
+
+
         coin.update(delta);
-        cashstack.update(delta);
         spacecraft.update(delta);
         spacejunk.update(delta);
         spacejunk2.update(delta);
@@ -160,6 +168,8 @@ public class Updater {
         spacejunk3.update(delta);
         spacejunk4.update(delta);
         spacejunk5.update(delta);
+        coin.update(delta);
+        cashstack.update(delta);
         //resetGame();
     }
 
@@ -176,6 +186,7 @@ public class Updater {
         startTime = 0;
         lowhealthPlayed = false;
         gameover = false;
+        moneyThisRun = 0;
     }
 
     private void updateCollision() {
@@ -200,7 +211,9 @@ public class Updater {
             }
 
             //fish
-        } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk2.getHitbox())) {
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk2.getHitbox())) {
 
             if (!spacejunk2.getDestroyed()) {
                 spacejunk2.setDestroyed();
@@ -218,7 +231,9 @@ public class Updater {
             }
 
             //can
-        } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk3.getHitbox())) {
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk3.getHitbox())) {
 
             if (!spacejunk3.getDestroyed()) {
                 spacejunk3.setDestroyed();
@@ -234,7 +249,9 @@ public class Updater {
             }
 
             //apple
-        } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk4.getHitbox())) {
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk4.getHitbox())) {
 
 
             if (!spacejunk4.getDestroyed()) {
@@ -250,7 +267,9 @@ public class Updater {
 
             }
         //Tire
-        } if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk5.getHitbox())) {
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), spacejunk5.getHitbox())) {
 
             if (!spacejunk5.getDestroyed()) {
                 spacejunk5.setDestroyed();
@@ -264,11 +283,38 @@ public class Updater {
                 gameState = GameState.GAMEOVER;
 
             }
+
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), coin.getHitbox())) {
+
+            if (!coin.getCollected()) {
+                coin.setCollected();
+                AssetLoader.cashSound.play();
+            }
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), coin.getHitbox())) {
+
+            if (!coin.getCollected()) {
+                coin.setCollected();
+                AssetLoader.cashSound.play();
+                moneyThisRun += 10;
+            }
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), cashstack.getHitbox())) {
+
+            if (!cashstack.getCollected()) {
+                cashstack.setCollected();
+                AssetLoader.cashSound.play();
+                moneyThisRun += 50;
+            }
         }
     }
 
     private void save(){
-        DataHandler.money += distance / 10;
+        DataHandler.money += moneyThisRun;
         DataHandler.save();
     }
 
@@ -329,6 +375,22 @@ public class Updater {
     public long getSpeed(){
         return speed;
 
+    }
+
+    public boolean getDevEnabled(){
+        return devEnabled;
+    }
+
+    public void setDevEnabled(){
+        if(devEnabled){
+            devEnabled = false;
+        } else {
+            devEnabled = true;
+        }
+    }
+
+    public int getMoneyThisRun(){
+        return moneyThisRun;
     }
 
 

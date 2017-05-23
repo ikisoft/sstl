@@ -31,11 +31,11 @@ public class Spacecraft {
         speedDece = 1;
         maxThrust = 3;
         //3
-        thrustPower = DataHandler.speedLevel;
+        thrustPower = DataHandler.speedLevel / 2;
 
         health = DataHandler.healthLevel;
         System.out.println("creating spacecraft, health: " + health
-                + "speed: " + thrustPower);
+                + " speed: " + thrustPower);
         movingLeft = false;
         movingRight = false;
 
@@ -58,8 +58,9 @@ public class Spacecraft {
 
         position.x -= speedLeft * 2 * delta;
         position.x += speedRight * 2 * delta;
-        speedLeft--;
-        speedRight--;
+
+        if(!movingLeft) speedLeft--;
+        if(!movingRight) speedRight--;
 
         if (speedLeft < 0) speedLeft = 0;
         if (speedRight < 0) speedRight = 0;
@@ -78,14 +79,14 @@ public class Spacecraft {
     public void moveLeft(float delta) {
 
         position.x -= speedLeft * delta;
-        speedRight = 0;
+        //speedRight = 0;
 
     }
 
     public void moveRight(float delta) {
 
         position.x += speedRight * delta;
-        speedLeft = 0;
+        //speedLeft = 0;
 
     }
 

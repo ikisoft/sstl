@@ -46,7 +46,7 @@ public class AssetLoader {
     public static Sound
             click,
             spacecraftHit, spacecraftHit2, spacecraftHit3, spacecraftHit4, spacecraftHit5,
-            explosion;
+            explosion, cashSound;
 
     public static float volume, lowhealthVolume;
 
@@ -157,6 +157,7 @@ public class AssetLoader {
         lowhealth.setLooping(false);
         click = Gdx.audio.newSound(Gdx.files.internal("sounds/menuclick2.wav"));
         explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/space_explosion.wav"));
+        cashSound = Gdx.audio.newSound(Gdx.files.internal("sounds/coin.wav"));
 
 
     }

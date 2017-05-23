@@ -40,11 +40,20 @@ public class InputHandler implements InputProcessor {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 
             updater.getSpacecraft().setMovingLeftTrue();
+            updater.getSpacecraft().setMovingLeftFalse();
             return true;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             updater.getSpacecraft().setMovingRightTrue();
+            updater.getSpacecraft().setMovingRightFalse();
 
            return true;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.D)
+                && Gdx.input.isKeyPressed(Input.Keys.E)
+                && Gdx.input.isKeyPressed(Input.Keys.V)){
+            updater.setDevEnabled();
+            return true;
         }
 
         return false;

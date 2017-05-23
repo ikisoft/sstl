@@ -57,7 +57,7 @@ public class Renderer {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setProjectionMatrix(camera.combined);
         rotation2 = 360;
-        planetPosition = new Vector2(300, 2000);
+        planetPosition = new Vector2(300, random.nextInt(1000));
         asteroidPosition = new Vector2(800, random.nextInt(1000));
         r = random.nextFloat();
         g = random.nextFloat();
@@ -250,7 +250,7 @@ public class Renderer {
         }
 
 
-        if (devEnabled) {
+        if (updater.getDevEnabled()) {
             AssetLoader.font.draw(batch, "Distance: " + updater.getDistance(), 50, 1800);
             AssetLoader.font.draw(batch, "Speed: " + updater.getSpeed(), 50, 1650);
         }
@@ -363,10 +363,15 @@ public class Renderer {
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y);
 
-        glyphLayout.setText(AssetLoader.font, "Score: " + updater.getDistance());
+        glyphLayout.setText(AssetLoader.font, "Distance: " + updater.getDistance());
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getLogo().y - 300);
+
+        glyphLayout.setText(AssetLoader.font, "Money: " + updater.getMoneyThisRun());
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getLogo().y - 400);
 
         glyphLayout.setText(AssetLoader.font, "SHOP");
         glyphWidth = glyphLayout.width;
@@ -464,7 +469,7 @@ public class Renderer {
                 //spacecraft.getHitbox().height
         );
 
-        if (devEnabled) {
+        if (updater.getDevEnabled()) {
 
             shapeRenderer.rect(
                     spacecraft.getPosition().x,
@@ -481,12 +486,12 @@ public class Renderer {
         //batch.draw(cow, 100, 100, 128, 128, 256, 256, 1, 1, rotation, false);
 
         batch.draw(AssetLoader.cow,
-                spacejunk.getPosition().x,
+                spacejunk.getPosition().x - 50,
                 spacejunk.getPosition().y,
-                spacejunk.getHitbox().width / 2,
-                spacejunk.getHitbox().height / 2,
-                spacejunk.getHitbox().width,
-                spacejunk.getHitbox().height,
+                (spacejunk.getHitbox().width + 100) / 2,
+                (spacejunk.getHitbox().height + 100) / 2,
+                spacejunk.getHitbox().width + 100,
+                spacejunk.getHitbox().height + 100,
                 1, 1, rotation2, false
         );
 
@@ -507,7 +512,7 @@ public class Renderer {
         }
 
         //DEV
-        if (devEnabled) {
+        if (updater.getDevEnabled()) {
 
             //spacejunk1
             shapeRenderer.rect(
@@ -545,9 +550,9 @@ public class Renderer {
                 spacejunk2.getPosition().y,
                 spacejunk2.getHitbox().width / 2,
                 spacejunk2.getHitbox().height / 2,
-                spacejunk2.getHitbox().width,
-                spacejunk2.getHitbox().height,
-                1, 1, rotation2, true
+                spacejunk2.getHitbox().width + 50,
+                spacejunk2.getHitbox().height + 50,
+                1, 1, 114, true
         );
 
         if (spacejunk2.getDestroyed()) {
@@ -566,7 +571,7 @@ public class Renderer {
         }
 
         //DEV
-        if (devEnabled) {
+        if (updater.getDevEnabled()) {
 
             shapeRenderer.rect(
                     spacejunk2.getPosition().x,
@@ -622,7 +627,7 @@ public class Renderer {
                     32, 32);
         }
 
-        if (devEnabled) {
+        if (updater.getDevEnabled()) {
 
             shapeRenderer.rect(
                     spacejunk3.getPosition().x,
@@ -676,7 +681,7 @@ public class Renderer {
 
         //DEV
 
-        if (devEnabled) {
+        if (updater.getDevEnabled()) {
 
             shapeRenderer.rect(
                     spacejunk4.getPosition().x,
@@ -731,7 +736,7 @@ public class Renderer {
         }
 
         //DEV
-        if (devEnabled) {
+        if (updater.getDevEnabled()) {
 
             shapeRenderer.rect(
                     spacejunk5.getPosition().x,
@@ -783,7 +788,7 @@ public class Renderer {
                 updater.getCashstack().getPosition().y, updater.getCashstack().getHitbox().height,
                 updater.getCashstack().getHitbox().width);
 
-        if(devEnabled){
+        if(updater.getDevEnabled()){
 
             shapeRenderer.rect(
                     updater.getCoin().getPosition().x,
@@ -891,8 +896,8 @@ public class Renderer {
         asteroidPosition.y += -1;
         asteroidPosition.x -= 0.3;
         if (planetPosition.y < -300) {
-            planetPosition.y = random.nextInt(3000 - 2500) + 2500;
-            planetPosition.x = random.nextInt(1080);
+            planetPosition.y = random.nextInt(2000);
+            planetPosition.x = random.nextInt(1000);
 
             r = random.nextFloat();
             if (r > 0.25f) r = 0.25f;
@@ -902,7 +907,7 @@ public class Renderer {
             if (b > 0.25f) b = 0.25f;
         }
         if (asteroidPosition.y < -300) {
-            asteroidPosition.y = random.nextInt(3000 - 2500) + 2500;
+            asteroidPosition.y = random.nextInt(1200);
 
             r2 = random.nextFloat();
             if (r2 > 0.25f) r2 = 0.25f;
