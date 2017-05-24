@@ -13,80 +13,76 @@ public class Spacecraft {
     private Vector2 position;
     private Rectangle hitbox;
     private boolean movingLeft, movingRight;
-    private int speedLeft, speedRight, maxThrust, thrustPower, speedDece;
-    private int health, maxSpeed;
+    private float velocityLeft, velocityRight, thrustPower;
+    private int health;
 
 
     public Spacecraft(float x, float y, float width, float height) {
+
+        System.out.println("creating spacecraft, health: " + health
+                + " speed: " + thrustPower);
 
         position = new Vector2(x, y);
         hitbox = new Rectangle();
         hitbox.setSize(width, height);
         movingLeft = false;
         movingRight = false;
-        speedLeft = 0;
-        speedRight = 0;
-
-        maxSpeed = 3;
-        speedDece = 1;
-        maxThrust = 3;
-        //3
-        thrustPower = DataHandler.speedLevel / 2;
-
+        velocityRight = 0;
+        velocityLeft = 0;
+        thrustPower = (float) DataHandler.speedLevel / 10; //0.3
         health = DataHandler.healthLevel;
-        System.out.println("creating spacecraft, health: " + health
-                + " speed: " + thrustPower);
-        movingLeft = false;
-        movingRight = false;
+
 
 
     }
 
     public void update(float delta) {
 
-        if (movingLeft) {
-            speedLeft += thrustPower;
-            moveLeft(delta);
-            //speedRight -= thrustPower * delta;
+        System.out.println("Thrustpower: " + thrustPower);
+
+        velocityLeft -= 0.01;
+        velocityRight -= 0.01;
+
+        if(velocityLeft <= 0)velocityLeft = 0;
+        if(velocityRight <= 0)velocityRight = 0;
+
+        position.x -= velocityLeft * 5;
+        position.x += velocityRight * 5;
+
+        if(movingLeft){
+            velocityLeft += thrustPower;
+            if(velocityLeft >= 3)velocityLeft = 3;
+            position.x -= velocityLeft;
+            velocityRight -= 0.05;
+
         }
 
-        if (movingRight) {
+        if(movingRight){
+            velocityRight += thrustPower;
+            if(velocityRight >= 3)velocityRight = 3;
+            position.x += velocityRight;
+            velocityLeft -= 0.05;
 
-            speedRight += thrustPower;
-            moveRight(delta);
+
         }
 
-        position.x -= speedLeft * 2 * delta;
-        position.x += speedRight * 2 * delta;
+        System.out.println("Velocity Left: " + velocityLeft);
+        System.out.println("Velocity Right: " + velocityRight);
 
-        if(!movingLeft) speedLeft--;
-        if(!movingRight) speedRight--;
-
-        if (speedLeft < 0) speedLeft = 0;
-        if (speedRight < 0) speedRight = 0;
-
-        if (speedLeft > maxThrust) speedLeft = maxThrust;
-        if (speedRight > maxThrust) speedRight = maxThrust;
-
-        if (position.x < 1) position.x = 1;
-        if (position.x > 1080 - hitbox.width) position.x = 1080 - hitbox.width;
+        //position
+        if (position.x <= 0){
+            position.x = 0;
+            velocityLeft = 0;
+            velocityRight = 1;
+        }
+        if (position.x >= 1080 - hitbox.width){
+            position.x = 1080 - hitbox.width;
+            velocityRight = 0;
+            velocityLeft = 1;
+        }
 
         hitbox.x = position.x;
         hitbox.y = position.y;
-
-    }
-
-    public void moveLeft(float delta) {
-
-        position.x -= speedLeft * delta;
-        //speedRight = 0;
-
-    }
-
-    public void moveRight(float delta) {
-
-        position.x += speedRight * delta;
-        //speedLeft = 0;
 
     }
 
@@ -94,12 +90,12 @@ public class Spacecraft {
         setPosition(284, 384);
         hitbox.x = position.x;
         hitbox.y = position.y;
-        speedLeft = 0;
-        speedRight = 0;
         movingLeft = false;
         movingRight = false;
-        thrustPower = DataHandler.speedLevel;
+        thrustPower = (float) DataHandler.speedLevel / 10;
         health = DataHandler.healthLevel;
+        velocityLeft = 0;
+        velocityRight = 0;
 
 
     }

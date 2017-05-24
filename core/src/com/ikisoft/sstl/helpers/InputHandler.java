@@ -40,11 +40,11 @@ public class InputHandler implements InputProcessor {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 
             updater.getSpacecraft().setMovingLeftTrue();
-            updater.getSpacecraft().setMovingLeftFalse();
+
             return true;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             updater.getSpacecraft().setMovingRightTrue();
-            updater.getSpacecraft().setMovingRightFalse();
+
 
            return true;
         }
@@ -108,10 +108,10 @@ public class InputHandler implements InputProcessor {
 
             case RUNNING:
 
-                if(x < 270 && y > 960){
+                if(x < 540){
                     updater.getSpacecraft().setMovingLeftTrue();
                 }
-                if(x > 810 && y > 960){
+                if(x > 540){
                     updater.getSpacecraft().setMovingRightTrue();
                 }
 
@@ -140,10 +140,12 @@ public class InputHandler implements InputProcessor {
 
             case SHOP:
 
-                //HEALTH LEVEL UP
-                if(shopButton.isDown(x, y, 256, 800)){
+                //HEALTH
+                if(shopButton.isDown(x, y, 162, 1048)){
 
-                    if(DataHandler.healthLevel < 10){
+                    DataHandler.upgradeSelected = 1;
+
+                    /*if(DataHandler.healthLevel < 10){
 
                         if(DataHandler.money >= 100 * DataHandler.healthLevel){
                             if(DataHandler.money - DataHandler.healthLevel >= 0){
@@ -152,13 +154,15 @@ public class InputHandler implements InputProcessor {
 
                             }
                         }
-                    }
+                    }*/
                 }
 
-                //SPEED LEVEL UP
-                if(shopButton.isDown(x, y, 780, 800)){
+                //SPEED
+                if(shopButton.isDown(x, y, 408, 1048)){
 
-                    if(DataHandler.speedLevel < 10) {
+                    DataHandler.upgradeSelected = 2;
+
+                    /*if(DataHandler.speedLevel < 10) {
 
                         if (DataHandler.money >= 75 * DataHandler.speedLevel) {
                             if (DataHandler.money - DataHandler.speedLevel >= 0) {
@@ -167,10 +171,23 @@ public class InputHandler implements InputProcessor {
 
                             }
                         }
-                    }
+                    }*/
                 }
 
-                if(menuButton.isDown(x, y, 540, 1430)){
+                //Kinetic Barrier
+                if(shopButton.isDown(x, y, 670, 1048)){
+
+                    DataHandler.upgradeSelected = 3;
+
+                }
+
+                if(shopButton.isDown(x, y, 940, 1048)){
+
+                    DataHandler.upgradeSelected = 4;
+
+                }
+
+                if(menuButton.isDown(x, y, 538, 1802)){
 
                     updater.resetGame();
                     updater.setGameState(Updater.GameState.RUNNING);

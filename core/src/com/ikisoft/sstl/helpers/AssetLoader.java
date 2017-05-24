@@ -22,8 +22,9 @@ public class AssetLoader {
     public static TextureRegion
             spacecraft, spacecraftLeft, spacecraftRight,
             asteroid, planet,
-            bg,
+            bg, particleEffect,
             junk, junk2, junk3, junk4, junk5, junk6, junk7, junk8, coin, cashstack,
+            glowGreen, glowYellow, cashstackBig, woodenCrate,
             healthFrame, health, speedFrameLeft, speedFrameMiddle, speedFrameRight, speed,
             fragment1, fragment2, fragment3,
             wireframe1, wireframe2, wireframe3, wireframe4,
@@ -32,21 +33,23 @@ public class AssetLoader {
             speedTier2, speedTier2Left, speedTier2Right,
             armorTier1, armorTier1Left, armorTier1Right,
             armorTier2, armorTier2Left, armorTier2Right,
+            afterburner, speedLine,
 
-            speedUp1, speedUp2, armorUp1, armorUp2, armorUp3,
+            speedUp1, kineticShield, barrier, armorUp2, armorUp3,
             soundMuted, musicMuted;
 
     public static Sprite
-            cow, fish, can, healthBarFrame, healthBar, coinSprite;
+            cow, fish, can, healthBarFrame, healthBar, coinSprite,
+            glowGreenSprite, glowYellowSprite;
 
-    public static BitmapFont font, fontSmall;
+    public static BitmapFont font, fontSmall, fontMedium;
 
     public static Music theme, lowhealth;
 
     public static Sound
             click,
             spacecraftHit, spacecraftHit2, spacecraftHit3, spacecraftHit4, spacecraftHit5,
-            explosion, cashSound;
+            explosion, cashSound, moo;
 
     public static float volume, lowhealthVolume;
 
@@ -61,6 +64,7 @@ public class AssetLoader {
         asteroid = new TextureRegion(texture, 0, 256, 256, 256);
         planet = new TextureRegion(texture, 256, 256, 256, 256);
         bg = new TextureRegion(texture, 0, 512, 256, 256);
+        particleEffect = new TextureRegion(texture, 256, 512, 256, 256);
         //cow
         junk = new TextureRegion(texture, 0, 768, 256, 256);
         cow = new Sprite(junk);
@@ -77,6 +81,12 @@ public class AssetLoader {
         cashstack = new TextureRegion(texture, 2048, 768, 256, 256 );
         coin = new TextureRegion(texture, 2304, 768, 256, 256 );
         coinSprite = new Sprite(coin);
+        glowGreen = new TextureRegion(texture, 2560, 768, 256, 256);
+        glowGreenSprite = new Sprite(glowGreen);
+        glowYellow = new TextureRegion(texture, 2816, 768, 256, 256);
+        glowYellowSprite = new Sprite(glowYellow);
+        cashstackBig = new TextureRegion(texture, 3072, 768, 256, 256);
+        woodenCrate = new TextureRegion(texture, 3328, 768, 256, 256);
 
         healthFrame = new TextureRegion(texture, 0, 1024, 256, 256);
         health = new TextureRegion(texture, 256, 1024, 256, 256);
@@ -120,19 +130,13 @@ public class AssetLoader {
         armorTier2Right = new TextureRegion(texture, 2816, 0, 256, 256);
 
         speedUp1 = new TextureRegion(texture, 0, 2304, 256, 256);
-        speedUp2 = new TextureRegion(texture, 256, 2304, 256, 256);
-        armorUp1 = new TextureRegion(texture, 512, 2304, 256, 256);
+        kineticShield = new TextureRegion(texture, 256, 2304, 256, 256);
+        barrier = new TextureRegion(texture, 512, 2304, 256, 256);
         armorUp2 = new TextureRegion(texture, 768, 2304, 256, 256);
         armorUp3 = new TextureRegion(texture, 1024, 2304, 256, 256);
 
-
-
-
-
-
-
-
-
+        afterburner = new TextureRegion(texture, 3840, 0, 256, 256);
+        speedLine = new TextureRegion(texture, 3840, 256, 256, 256);
 
         font = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
         font.getData().setScale(2f, 2f);
@@ -140,6 +144,9 @@ public class AssetLoader {
         fontSmall = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
         fontSmall.getData().setScale(1f, 1f);
         fontSmall.setColor(0.141f, 0.848f, 0.407f, 1f);
+        fontMedium = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
+        fontMedium.getData().setScale(1.5f, 1.5f);
+        fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
 
 
         theme = Gdx.audio.newMusic(Gdx.files.internal("sounds/hello_world_msu.mp3"));
@@ -151,13 +158,15 @@ public class AssetLoader {
         spacecraftHit = Gdx.audio.newSound(Gdx.files.internal("sounds/heavymetalhit_mono.wav"));
         spacecraftHit2 = Gdx.audio.newSound(Gdx.files.internal("sounds/heavymetalhit2.wav"));
         spacecraftHit3 = Gdx.audio.newSound(Gdx.files.internal("sounds/metalhit3.wav"));
-        spacecraftHit4 = Gdx.audio.newSound(Gdx.files.internal("sounds/splash.wav"));
+        spacecraftHit4 = Gdx.audio.newSound(Gdx.files.internal("sounds/splash2.wav"));
         spacecraftHit5 = Gdx.audio.newSound(Gdx.files.internal("sounds/metalhit5.wav"));
         lowhealth = Gdx.audio.newMusic(Gdx.files.internal("sounds/conditioncritical_speech2.wav"));
         lowhealth.setLooping(false);
         click = Gdx.audio.newSound(Gdx.files.internal("sounds/menuclick2.wav"));
         explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/space_explosion.wav"));
-        cashSound = Gdx.audio.newSound(Gdx.files.internal("sounds/coin.wav"));
+        cashSound = Gdx.audio.newSound(Gdx.files.internal("sounds/coin2.wav"));
+        moo = Gdx.audio.newSound(Gdx.files.internal("sounds/moo.wav"));
+
 
 
     }

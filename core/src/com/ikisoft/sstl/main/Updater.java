@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
+import com.ikisoft.sstl.gameobjects.Crate;
 import com.ikisoft.sstl.gameobjects.Money;
 import com.ikisoft.sstl.gameobjects.Spacecraft;
 import com.ikisoft.sstl.gameobjects.Spacejunk;
@@ -25,6 +26,7 @@ public class Updater {
     private Spacecraft spacecraft;
     private Spacejunk spacejunk, spacejunk2, spacejunk3, spacejunk4, spacejunk5;
     private Money coin, cashstack;
+    private Crate woodenCrate;
     private LerpHandler logo;
     private boolean dataSaved, gameover, lowhealthPlayed, devEnabled;
     private int moneyThisRun;
@@ -53,6 +55,7 @@ public class Updater {
         //start y  2300
         coin = new Money(40, 40, this, 10, 2050);
         cashstack = new Money(100, 100, this, 50, 5000);
+        woodenCrate = new Crate(256, 256, this, 50000);
         logo = new LerpHandler(200, 2600, 200, 1536);
         distance = 0;
         speed = 1;
@@ -136,6 +139,7 @@ public class Updater {
 
 
         coin.update(delta);
+        woodenCrate.update(delta);
         spacecraft.update(delta);
         spacejunk.update(delta);
         spacejunk2.update(delta);
@@ -203,6 +207,7 @@ public class Updater {
                 speed -= 500;
 
                 AssetLoader.spacecraftHit.play();
+                AssetLoader.moo.play();
 
             } else if (spacecraft.getHealth() == 0){
                 spacejunk.setDestroyed();
@@ -291,17 +296,10 @@ public class Updater {
             if (!coin.getCollected()) {
                 coin.setCollected();
                 AssetLoader.cashSound.play();
-            }
-        }
-
-        if(Intersector.overlaps(spacecraft.getHitbox(), coin.getHitbox())) {
-
-            if (!coin.getCollected()) {
-                coin.setCollected();
-                AssetLoader.cashSound.play();
                 moneyThisRun += 10;
             }
         }
+
 
         if(Intersector.overlaps(spacecraft.getHitbox(), cashstack.getHitbox())) {
 
@@ -309,6 +307,14 @@ public class Updater {
                 cashstack.setCollected();
                 AssetLoader.cashSound.play();
                 moneyThisRun += 50;
+            }
+        }
+
+        if(Intersector.overlaps(spacecraft.getHitbox(), woodenCrate.getHitbox())) {
+
+            if (!woodenCrate.getCollected()) {
+                woodenCrate.setCollected();
+                AssetLoader.cashSound.play();
             }
         }
     }
@@ -349,6 +355,10 @@ public class Updater {
 
     public Money getCashstack(){
         return cashstack;
+    }
+
+    public Crate getWoodenCrate(){
+        return woodenCrate;
     }
 
     public GameState getGameState(){

@@ -12,28 +12,39 @@ public class DataHandler {
     public static Preferences prefs;
     public static int healthLevel;
     public static int speedLevel;
+    public static int kineticBarrierLevel;
+    public static int shieldLevel;
     public static int money;
+    public static int scrap;
     public static int highscore;
+    public static int upgradeSelected;
+    public static int shopHelper;
 
     public static boolean soundMuted, musicMuted;
 
     public static void load(){
 
+        upgradeSelected = 0;
         prefs = Gdx.app.getPreferences("SSTL_prefs");
         money = prefs.getInteger("money");
+        scrap = prefs.getInteger("scrap");
         //highscore = prefs.getInteger("highscore");
+
         healthLevel = prefs.getInteger("healthlevel");
         if(healthLevel < 3){
             healthLevel = 3;
         }
-/*        speedLevel = prefs.getInteger("speedlevel");
-        if(speedLevel == 0){
-            speedLevel = 1;
-        }*/
-
         speedLevel = prefs.getInteger("speedlevel");
-        if(speedLevel < 3){
-            speedLevel = 3;
+        if(speedLevel < 1){
+            speedLevel = 1;
+        }
+        kineticBarrierLevel = prefs.getInteger("barrierlevel");
+        if(kineticBarrierLevel < 1){
+            kineticBarrierLevel = 1;
+        }
+        shieldLevel = prefs.getInteger("shieldlevel");
+        if(shieldLevel < 1){
+            shieldLevel = 1;
         }
     }
 
