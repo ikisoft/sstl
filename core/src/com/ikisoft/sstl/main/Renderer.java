@@ -13,8 +13,10 @@ import com.ikisoft.sstl.gameobjects.Spacecraft;
 import com.ikisoft.sstl.gameobjects.Spacejunk;
 import com.ikisoft.sstl.helpers.AssetLoader;
 import com.ikisoft.sstl.helpers.DataHandler;
+import com.ikisoft.sstl.helpers.StringConstants;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 /**
@@ -39,8 +41,6 @@ public class Renderer {
     private Vector2 planetPosition, asteroidPosition;
     private boolean devEnabled, gameover, warningSwitch, timeReset;
     private GlyphLayout glyphLayout;
-    private String logoText, infoText, shopText, optionsText, gameoverText, armorText,
-            thrusterText, kineticText, energyShieldText;
     private int timer, armor, speed, hudHeight, particlePosY, particlePosX, speedFrameY;
     private ArrayList<Float> rc;
 
@@ -79,31 +79,16 @@ public class Renderer {
 
 
         glyphLayout = new GlyphLayout();
-        logoText = "   (Slightly)\nSlower Than Light";
-        infoText = "GFH JAM 2017\n" +
-                "  ikisoft";
-        shopText = "ARMOR: " + DataHandler.healthLevel + "\n" +
-                "THRUSTERS: " + DataHandler.speedLevel + "\n" +
-                "KINETIC BARRIER: " + DataHandler.kineticBarrierLevel + "\n" +
-                "ENERGY SHIELD: " + DataHandler.shieldLevel + "\n\n" +
-        "MONEY: " + DataHandler.money + "$\n" +
-        "SCRAP METAL: " + DataHandler.scrap;
-        optionsText = "here are some\noptionsText!";
-        gameoverText = "oh dear,\nyou ran into\nsome junk...";
-        armorText = "The armor plating of your spaceship\n" +
-                "determines how many hits you can\n" +
-                "take before your ship breaks.";
-        thrusterText = "Thrusters increase your horizontal\nspeed" +
-                " but they also increase\ndrifting.";
-        kineticText = "Kinetic barrier reduces the speed\n" +
-                "penalty when hitting something.";
-        energyShieldText = "Energy shield will protect your\nships" +
-                " hull from damaging impacts.\n" +
-                "Needs time to recharge.";
+
     }
 
     public void render(float runTime) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        rotation2 -= 0.5;
+        rotation += 0.5;
+        if (rotation2 < 0f) rotation2 = 360f;
+        if (rotation > 360f) rotation = 0f;
 
         switch (updater.getGameState()) {
             case START:
@@ -116,25 +101,17 @@ public class Renderer {
                 timeReset = false;
                 timer++;
                 if (timer > 120) timer = 0;
-                gameover = false;
                 renderRunning(runTime);
                 break;
             case PAUSED:
                 renderPaused();
                 break;
             case GAMEOVER:
-                resetTimer();
-                timer++;
                 particlePosY = 0;
-
-                if (timer >= 300) timer = 300;
-
-                if ((timer % 300) == 0) {
-                    renderGameover(runTime);
-                } else {
-                    renderRunning(runTime);
-                }
-
+                renderRunning(runTime);
+                break;
+            case GAMEOVERSCREEN:
+                renderGameover(runTime);
 
                 break;
             case OPTIONS:
@@ -145,12 +122,42 @@ public class Renderer {
                 break;
             case INFO:
                 renderInfo();
+                break;
+            case CRATESPLASH:
+
+                renderCratesplash();
+
+                break;
+            case ITEMSPLASH:
+
+                renderItemsplash();
             default:
                 break;
         }
+    }
 
+    private void renderItemsplash() {
+
+        batch.begin();
+        batch.enableBlending();
+
+        drawUI();
+
+        glyphLayout.setText(AssetLoader.font, "LOOT");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y);
+
+        glyphLayout.setText(AssetLoader.font, "Continue");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 1300);
+
+
+        batch.end();
 
     }
+
 
     private void resetTimer() {
 
@@ -167,32 +174,32 @@ public class Renderer {
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, logoText);
+        glyphLayout.setText(AssetLoader.font, StringConstants.logoText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getLogo().y);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getAnchorPos().y);
         glyphLayout.setText(AssetLoader.font, "start");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 550);
+                updater.getAnchorPos().y - 550);
 
 
         glyphLayout.setText(AssetLoader.font, "shop");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 700);
+                updater.getAnchorPos().y - 700);
 
         glyphLayout.setText(AssetLoader.font, "info");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 850);
+                updater.getAnchorPos().y - 850);
 
         glyphLayout.setText(AssetLoader.font, "options");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 1000);
+                updater.getAnchorPos().y - 1000);
 
         batch.draw(AssetLoader.wireframeAnimation.getKeyFrame(runTime),
-                540 - 256, updater.getLogo().y - 550, 512, 512);
+                540 - 256, updater.getAnchorPos().y - 550, 512, 512);
 
         batch.end();
 
@@ -305,32 +312,32 @@ public class Renderer {
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, infoText);
+        glyphLayout.setText(AssetLoader.font, StringConstants.infoText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getLogo().y);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getAnchorPos().y);
 
         glyphLayout.setText(AssetLoader.font, "COMING TO GOOGLE PLAY\n" +
                 "When it's ready...");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 175);
+                updater.getAnchorPos().y - 175);
 
         glyphLayout.setText(AssetLoader.font, "MUSIC & PROGRAMMING\n" +
                 "       IKIS");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 500);
+                updater.getAnchorPos().y - 500);
 
         glyphLayout.setText(AssetLoader.font, "GRAPHIC DESIGNER\n" +
                 "  EELIS OTSAMO");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 750);
+                updater.getAnchorPos().y - 750);
 
         glyphLayout.setText(AssetLoader.font, "BACK");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 1000);
+                updater.getAnchorPos().y - 1000);
 
         batch.end();
 
@@ -340,154 +347,181 @@ public class Renderer {
     private void renderShop(float runTime) {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
         batch.enableBlending();
         batch.setColor(1, 1, 1, 1);
-        //batch.draw(AssetLoader.wireframeAnimation.getKeyFrame(runTime), 568, 1300, 512, 512);
-        batch.draw(AssetLoader.wireframe6, 568, 1300, 512, 512);
 
-        glyphLayout.setText(AssetLoader.fontMedium, shopText);
-        glyphWidth = glyphLayout.width;
-        AssetLoader.fontMedium.draw(batch, glyphLayout, 40, updater.getLogo().y + 120);
+        drawUI();
 
-        /*glyphLayout.setText(AssetLoader.fontMedium, DataHandler.money + "$");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y);*/
+        if (DataHandler.upgradeSelected == 0) {
+            batch.draw(AssetLoader.wireframeAnimation.getKeyFrame(runTime), 280, 600, 512, 512);
+            glyphLayout.setText(AssetLoader.font, "UPGRADE SHIP");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y);
+        }
 
-        /*glyphLayout.setText(AssetLoader.font, "OPTIONS");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 850);
-*/
+
         glyphLayout.setText(AssetLoader.font, "BACK");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 1400);
+                updater.getAnchorPos().y - 1200);
 
 
         //ARMOR
 
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.armorUp3, 35, updater.getLogo().y - 800);
-        /*glyphLayout.setText(AssetLoader.fontSmall, "Upgrade\narmor\n");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.fontSmall.draw(batch, glyphLayout, 75,
-                updater.getLogo().y - 830);*/
+        batch.draw(AssetLoader.armorUp3, 35, updater.getAnchorPos().y - 400);
 
         if (DataHandler.upgradeSelected == 1) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.armorUp3, 35, updater.getLogo().y - 800);
-            glyphLayout.setText(AssetLoader.fontMedium, armorText);
+            batch.draw(AssetLoader.armorUp3, 35, updater.getAnchorPos().y - 400);
+
+            glyphLayout.setText(AssetLoader.font, "Armor plating");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y);
+
+            glyphLayout.setText(AssetLoader.fontMedium, StringConstants.armorText);
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 900);
+                    updater.getAnchorPos().y - 500);
 
             //healthframe and health are just used to render, no reference from now on
             for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 256, 64, 64);
+                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
             }
             for (int i = 0; i < 640 * (DataHandler.healthLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 256, 64, 64);
+                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
             }
 
-            glyphLayout.setText(AssetLoader.fontMedium, "UPGRADE");
+            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 1150);
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 900);
+            AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
+
 
         }
 
         //THRUSTER
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.speedUp1, 280, updater.getLogo().y - 800);
+        batch.draw(AssetLoader.speedUp1, 280, updater.getAnchorPos().y - 400);
         /*glyphLayout.setText(AssetLoader.fontSmall, "Upgrade\nthrusters");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmall.draw(batch, glyphLayout, 310,
-                updater.getLogo().y - 830);*/
+                updater.getAnchorPos().nanoSeconds - 830);*/
 
         if (DataHandler.upgradeSelected == 2) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.speedUp1, 280, updater.getLogo().y - 800);
-            glyphLayout.setText(AssetLoader.fontMedium, thrusterText);
+            batch.draw(AssetLoader.speedUp1, 280, updater.getAnchorPos().y - 400);
+
+            glyphLayout.setText(AssetLoader.font, "Thrusters");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y);
+
+            glyphLayout.setText(AssetLoader.fontMedium, StringConstants.thrusterText);
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 900);
+                    updater.getAnchorPos().y - 500);
 
             for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 256, 64, 64);
+                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
             }
             for (int i = 0; i < 640 * (DataHandler.speedLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 256, 64, 64);
+                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
             }
 
-            glyphLayout.setText(AssetLoader.fontMedium, "UPGRADE");
+            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 1150);
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 900);
+            AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
+
         }
 
         //KINETIC
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.kineticShield, 545, updater.getLogo().y - 800);
+        batch.draw(AssetLoader.kineticShield, 545, updater.getAnchorPos().y - 400);
         /*glyphLayout.setText(AssetLoader.fontSmall, "Upgrade\nkinetic\nbarrier");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmall.draw(batch, glyphLayout, 600,
-                updater.getLogo().y - 830);*/
+                updater.getAnchorPos().nanoSeconds - 830);*/
 
         if (DataHandler.upgradeSelected == 3) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.kineticShield, 545, updater.getLogo().y - 800);
-            glyphLayout.setText(AssetLoader.fontMedium, kineticText);
+            batch.draw(AssetLoader.kineticShield, 545, updater.getAnchorPos().y - 400);
+
+            glyphLayout.setText(AssetLoader.font, "Kinetic barrier");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y);
+
+            glyphLayout.setText(AssetLoader.fontMedium, StringConstants.kineticText);
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 900);
+                    updater.getAnchorPos().y - 500);
 
             for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 256, 64, 64);
+                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
             }
             for (int i = 0; i < 640 * (DataHandler.kineticBarrierLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 256, 64, 64);
+                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
             }
 
-            glyphLayout.setText(AssetLoader.fontMedium, "UPGRADE");
+            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 1150);
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 900);
+            AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         }
 
         //SHIELD
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.barrier, 813, updater.getLogo().y - 800);
+        batch.draw(AssetLoader.barrier, 813, updater.getAnchorPos().y - 400);
         /*glyphLayout.setText(AssetLoader.fontSmall, "Upgrade\nEnergy\nShield");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmall.draw(batch, glyphLayout, 868,
-                updater.getLogo().y - 830);*/
+                updater.getAnchorPos().nanoSeconds - 830);*/
 
         if (DataHandler.upgradeSelected == 4) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.barrier, 813, updater.getLogo().y - 800);
-            glyphLayout.setText(AssetLoader.fontMedium, energyShieldText);
+            batch.draw(AssetLoader.barrier, 813, updater.getAnchorPos().y - 400);
+
+            glyphLayout.setText(AssetLoader.font, "Energy Shield");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y);
+
+            glyphLayout.setText(AssetLoader.fontMedium, StringConstants.energyShieldText);
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 900);
+                    updater.getAnchorPos().y - 500);
 
             for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 256, 64, 64);
+                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
             }
             for (int i = 0; i < 640 * (DataHandler.shieldLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 256, 64, 64);
+                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
             }
 
-            glyphLayout.setText(AssetLoader.fontMedium, "UPGRADE");
+
+            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                    updater.getLogo().y - 1150);
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 900);
+            AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         }
 
@@ -503,40 +537,37 @@ public class Renderer {
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, gameoverText);
+        drawUI();
+
+        glyphLayout.setText(AssetLoader.font, StringConstants.gameoverText);
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y);
+                updater.getAnchorPos().y);
 
         glyphLayout.setText(AssetLoader.fontSmall, DataHandler.money + "$");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmall.draw(batch, glyphLayout, glyphWidth,
-                updater.getLogo().y - 1400);
+                updater.getAnchorPos().y - 1400);
 
-        glyphLayout.setText(AssetLoader.font, "Distance: " + updater.getDistance());
+        glyphLayout.setText(AssetLoader.fontMedium, StringConstants.gameoverText2);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 300);
-
-        glyphLayout.setText(AssetLoader.font, "Money: " + updater.getMoneyThisRun());
-        glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 400);
+        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 300);
 
         glyphLayout.setText(AssetLoader.font, "SHOP");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 700);
+                updater.getAnchorPos().y - 700);
 
         glyphLayout.setText(AssetLoader.font, "OPTIONS");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 850);
+                updater.getAnchorPos().y - 850);
 
         glyphLayout.setText(AssetLoader.font, "PLAY");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 1000);
+                updater.getAnchorPos().y - 1000);
 
         batch.end();
 
@@ -544,21 +575,104 @@ public class Renderer {
 
     private void renderOptions(float runTime) {
 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
         batch.enableBlending();
 
-        glyphLayout.setText(AssetLoader.font, optionsText);
+        glyphLayout.setText(AssetLoader.font, StringConstants.optionsText);
         glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getLogo().y);
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, updater.getAnchorPos().y);
 
         glyphLayout.setText(AssetLoader.font, "PLAY");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getLogo().y - 1000);
+                updater.getAnchorPos().y - 1000);
 
         batch.end();
 
+
+    }
+
+    private void renderCratesplash() {
+
+        batch.begin();
+        batch.enableBlending();
+
+        drawUI();
+
+            if (updater.getCrateQueue().peek() == 1) {
+
+                batch.draw(AssetLoader.bigWoodenCrate,
+                        updater.getCrateLerp().x,
+                        updater.getCrateLerp().y);
+
+                batch.setColor(0.918f, 1f, 0.996f, 0.75f);
+                batch.draw(AssetLoader.glowYellowSprite,
+                        updater.getCrateLerp().x,
+                        updater.getCrateLerp().y + 124,
+                        128,
+                        128,
+                        256,
+                        256, 2, 2, rotation, true
+                );
+                batch.setColor(1, 1, 1, 1);
+            }
+
+        glyphLayout.setText(AssetLoader.font, "YOU FOUND A CRATE");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y);
+
+
+        if (DataHandler.money >= 1000) {
+            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+        } else {
+            AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
+        }
+
+        glyphLayout.setText(AssetLoader.font, "OPEN");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 850);
+        AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
+
+        glyphLayout.setText(AssetLoader.fontMedium, "1000$");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 1000);
+
+        glyphLayout.setText(AssetLoader.fontMedium, "FREE");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 1100);
+
+
+        glyphLayout.setText(AssetLoader.font, StringConstants.crateSplashContinue);
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 1300);
+
+
+        batch.end();
+
+    }
+
+    private void drawUI() {
+
+        batch.draw(AssetLoader.moneyIcon, 40, updater.getAnchorPos().y + 85, 128, 128);
+        batch.draw(AssetLoader.scrapIcon, 334, updater.getAnchorPos().y + 85, 128, 128);
+        //batch.draw(AssetLoader.scrapIcon, 40, updater.getAnchorPos().nanoSeconds + 10, 128, 128);
+        glyphLayout.setText(AssetLoader.fontMedium, DataHandler.money + "$");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, 128, updater.getAnchorPos().y + 200);
+        /*glyphLayout.setText(AssetLoader.fontMedium, DataHandler.scrap + "");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, 128,
+                updater.getAnchorPos().nanoSeconds + 120);*/
+
+        glyphLayout.setText(AssetLoader.fontMedium, DataHandler.scrap + "");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, 422, updater.getAnchorPos().y + 200);
 
     }
 
@@ -622,7 +736,7 @@ public class Renderer {
 
         batch.draw(spacecraftTexture,
                 spacecraft.getPosition().x - 64,
-                spacecraft.getPosition().y - 32
+                spacecraft.getPosition().y - 100
 
                 //,
                 //spacecraft.getHitbox().width,
@@ -668,14 +782,14 @@ public class Renderer {
             batch.enableBlending();
 
             batch.draw(AssetLoader.speedLine, spacecraft.getPosition().x + 153,
-                    spacecraft.getPosition().y - 200);
+                    spacecraft.getPosition().y - 268);
             batch.draw(AssetLoader.speedLine, spacecraft.getPosition().x - 35,
-                    spacecraft.getPosition().y - 200);
+                    spacecraft.getPosition().y - 268);
 
 
             //AFTERBURNER
             batch.draw(AssetLoader.afterburner, spacecraft.getPosition().x - 64,
-                    spacecraft.getPosition().y - 180);
+                    spacecraft.getPosition().y - 248);
 
 
             batch.end();
@@ -1158,12 +1272,6 @@ public class Renderer {
         if (asteroidPosition.y < -300) {
             asteroidPosition.y = 2100;
         }
-
-        rotation2 -= 0.5;
-        rotation += 0.5;
-        if (rotation2 < 0f) rotation2 = 360f;
-        if (rotation > 360f) rotation = 0f;
-
     }
 }
 

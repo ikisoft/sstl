@@ -24,7 +24,7 @@ public class AssetLoader {
             asteroid, planet,
             bg, particleEffect,
             junk, junk2, junk3, junk4, junk5, junk6, junk7, junk8, coin, cashstack,
-            glowGreen, glowYellow, cashstackBig, woodenCrate,
+            glowGreen, glowYellow, cashstackBig, woodenCrate, bigWoodenCrate, scrap,
             healthFrame, health, speedFrameLeft, speedFrameMiddle, speedFrameRight, speed,
             fragment1, fragment2, fragment3,
             wireframe1, wireframe2, wireframe3, wireframe4,
@@ -33,10 +33,10 @@ public class AssetLoader {
             speedTier2, speedTier2Left, speedTier2Right,
             armorTier1, armorTier1Left, armorTier1Right,
             armorTier2, armorTier2Left, armorTier2Right,
-            afterburner, speedLine,
+            afterburner, speedLine, core, rod,
 
             speedUp1, kineticShield, barrier, armorUp2, armorUp3,
-            soundMuted, musicMuted;
+            soundMuted, musicMuted, moneyIcon, scrapIcon;
 
     public static Sprite
             cow, fish, can, healthBarFrame, healthBar, coinSprite,
@@ -87,6 +87,10 @@ public class AssetLoader {
         glowYellowSprite = new Sprite(glowYellow);
         cashstackBig = new TextureRegion(texture, 3072, 768, 256, 256);
         woodenCrate = new TextureRegion(texture, 3328, 768, 256, 256);
+        scrap = new TextureRegion(texture, 3584, 768, 256, 256);
+        bigWoodenCrate = new TextureRegion(texture, 0, 3584, 512, 512);
+        core = new TextureRegion(texture, 0, 3328, 256, 256);
+        rod = new TextureRegion(texture, 256, 3328, 256, 256);
 
         healthFrame = new TextureRegion(texture, 0, 1024, 256, 256);
         health = new TextureRegion(texture, 256, 1024, 256, 256);
@@ -134,6 +138,11 @@ public class AssetLoader {
         barrier = new TextureRegion(texture, 512, 2304, 256, 256);
         armorUp2 = new TextureRegion(texture, 768, 2304, 256, 256);
         armorUp3 = new TextureRegion(texture, 1024, 2304, 256, 256);
+        soundMuted = new TextureRegion(texture, 1280, 2304, 256, 256);
+        musicMuted = new TextureRegion(texture, 1536, 2304, 256, 256);
+        moneyIcon = new TextureRegion(texture, 1792, 2304, 256, 256);
+        scrapIcon = new TextureRegion(texture, 2048, 2304, 256, 256);
+
 
         afterburner = new TextureRegion(texture, 3840, 0, 256, 256);
         speedLine = new TextureRegion(texture, 3840, 256, 256, 256);

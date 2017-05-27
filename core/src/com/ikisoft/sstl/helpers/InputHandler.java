@@ -16,14 +16,17 @@ public class InputHandler implements InputProcessor {
     private float screenHeight;
     private Button menuButton, shopButton;
     float delta;
+    private boolean fuckThis;
 
-    public InputHandler(Updater updater, float screenWidth, float screenHeight){
+    public InputHandler(Updater updater, float screenWidth, float screenHeight) {
 
         this.updater = updater;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        menuButton = new Button(screenWidth/3, 100);
+        menuButton = new Button(screenWidth / 3, 100);
         shopButton = new Button(256, 256);
+        fuckThis = false;
+
 
     }
 
@@ -31,27 +34,20 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
 
-        /*if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            updater.resetGame();
-            return true;
-         }*/
-        System.out.println("keydown");
+        System.err.println("keydown");
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-
             updater.getSpacecraft().setMovingLeftTrue();
-
             return true;
+
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             updater.getSpacecraft().setMovingRightTrue();
-
-
-           return true;
+            return true;
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.D)
+        if (Gdx.input.isKeyPressed(Input.Keys.D)
                 && Gdx.input.isKeyPressed(Input.Keys.E)
-                && Gdx.input.isKeyPressed(Input.Keys.V)){
+                && Gdx.input.isKeyPressed(Input.Keys.V)) {
             updater.setDevEnabled();
             return true;
         }
@@ -61,15 +57,9 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        System.out.println("keyup");
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            updater.getSpacecraft().setMovingLeftFalse();
-            return true;
-        }else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            updater.getSpacecraft().setMovingRightFalse();
-            return true;
-        }
+        updater.getSpacecraft().setMovingLeftFalse();
+        updater.getSpacecraft().setMovingRightFalse();
 
         return false;
     }
@@ -84,46 +74,56 @@ public class InputHandler implements InputProcessor {
 
         x = (int) scaleX(x);
         y = (int) scaleY(y);
-        System.out.println("x: "+ x);
+        System.out.println("x: " + x);
         System.out.println("y: " + y);
 
 
-
-        switch (updater.getGameState()){
+        switch (updater.getGameState()) {
 
             case START:
 
-               if(menuButton.isDown(x, y, 540, 1000)){
-                   updater.setGameState(Updater.GameState.RUNNING);
-               }
-               if(menuButton.isDown(x, y, 540, 1130)){
-                   updater.setGameState(Updater.GameState.SHOP);
-               }
-               if(menuButton.isDown(x, y, 540, 1270)){
-                   updater.setGameState(Updater.GameState.INFO);
-               }
-               if(menuButton.isDown(x, y, 540, 1430)){
-                   updater.setGameState(Updater.GameState.OPTIONS);
-               }
+                if (menuButton.isDown(x, y, 540, 1000)) {
+                    updater.setGameState(Updater.GameState.RUNNING);
+                }
+                if (menuButton.isDown(x, y, 540, 1130)) {
+                    updater.setGameState(Updater.GameState.SHOP);
+                }
+                if (menuButton.isDown(x, y, 540, 1270)) {
+                    updater.setGameState(Updater.GameState.INFO);
+                }
+                if (menuButton.isDown(x, y, 540, 1430)) {
+                    updater.setGameState(Updater.GameState.OPTIONS);
+                }
 
             case RUNNING:
 
-                if(x < 540){
+
+                if (x < 540) {
                     updater.getSpacecraft().setMovingLeftTrue();
-                }
-                if(x > 540){
+                } else if (x > 540) {
                     updater.getSpacecraft().setMovingRightTrue();
                 }
+
+                //fuck touch input
+                if (!fuckThis) {
+                    updater.getSpacecraft().setMovingLeftFalse();
+                    updater.getSpacecraft().setMovingRightFalse();
+                }
+
+                fuckThis = true;
 
                 break;
 
             case GAMEOVER:
+                break;
 
-                if(menuButton.isDown(x, y, 540, 1130)){
+            case GAMEOVERSCREEN:
+
+                if (menuButton.isDown(x, y, 540, 1130)) {
                     updater.setGameState(Updater.GameState.SHOP);
                 }
 
-                if(menuButton.isDown(x, y, 540, 1430)){
+                if (menuButton.isDown(x, y, 540, 1430)) {
                     updater.resetGame();
                 }
 
@@ -131,9 +131,9 @@ public class InputHandler implements InputProcessor {
 
             case INFO:
 
-                if(menuButton.isDown(x, y, 540, 1430)){
+                if (menuButton.isDown(x, y, 540, 1430)) {
                     updater.setGameState(Updater.GameState.START);
-            }
+                }
 
 
                 break;
@@ -141,7 +141,7 @@ public class InputHandler implements InputProcessor {
             case SHOP:
 
                 //HEALTH
-                if(shopButton.isDown(x, y, 162, 1048)){
+                if (shopButton.isDown(x, y, 162, 652)) {
 
                     DataHandler.upgradeSelected = 1;
 
@@ -158,7 +158,7 @@ public class InputHandler implements InputProcessor {
                 }
 
                 //SPEED
-                if(shopButton.isDown(x, y, 408, 1048)){
+                if (shopButton.isDown(x, y, 408, 652)) {
 
                     DataHandler.upgradeSelected = 2;
 
@@ -175,19 +175,21 @@ public class InputHandler implements InputProcessor {
                 }
 
                 //Kinetic Barrier
-                if(shopButton.isDown(x, y, 670, 1048)){
+                if (shopButton.isDown(x, y, 670, 652)) {
 
                     DataHandler.upgradeSelected = 3;
 
                 }
 
-                if(shopButton.isDown(x, y, 940, 1048)){
+                //energy shield
+                if (shopButton.isDown(x, y, 940, 652)) {
 
                     DataHandler.upgradeSelected = 4;
 
                 }
 
-                if(menuButton.isDown(x, y, 538, 1802)){
+                //Back
+                if (menuButton.isDown(x, y, 538, 1600)) {
 
                     updater.resetGame();
                     updater.setGameState(Updater.GameState.RUNNING);
@@ -195,14 +197,39 @@ public class InputHandler implements InputProcessor {
 
 
                 break;
+
             case OPTIONS:
 
-                if(menuButton.isDown(x, y, 540, 1430)){
+                if (menuButton.isDown(x, y, 540, 1430)) {
 
                     updater.setGameState(Updater.GameState.RUNNING);
                 }
 
                 break;
+
+            case CRATESPLASH:
+
+                if (menuButton.isDown(x, y, 546, 1706)) {
+                    updater.setGameState(Updater.GameState.GAMEOVERSCREEN);
+                }
+
+                if (menuButton.isDown(x, y, 540, 1256)) {
+                    updater.openCrate();
+                }
+                break;
+
+            case ITEMSPLASH:
+
+                if (menuButton.isDown(x, y, 546, 1706)) {
+
+                    if(updater.getCrateQueue().isEmpty()){
+                        updater.setGameState(Updater.GameState.GAMEOVERSCREEN);
+                    }else{
+                        updater.setGameState(Updater.GameState.CRATESPLASH);
+                    }
+
+                }
+
         }
 
         return false;
@@ -211,28 +238,25 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
 
-        switch (updater.getGameState()){
+        x = (int) scaleX(x);
+        y = (int) scaleY(y);
+
+        switch (updater.getGameState()) {
 
             case RUNNING:
 
-                if(x < 270 && y > 960){
+                if (x < 540) {
                     updater.getSpacecraft().setMovingLeftFalse();
                 }
-                if(x > 810 && y > 960){
+
+                if (x > 540) {
                     updater.getSpacecraft().setMovingRightFalse();
                 }
 
                 break;
 
             case GAMEOVER:
-
-
-
-
-
         }
-
-
         return false;
     }
 

@@ -9,6 +9,7 @@ import com.ikisoft.sstl.helpers.AssetLoader;
 import com.ikisoft.sstl.helpers.DataHandler;
 import com.ikisoft.sstl.helpers.GestureHandler;
 import com.ikisoft.sstl.helpers.InputHandler;
+import com.ikisoft.sstl.helpers.StringConstants;
 import com.ikisoft.sstl.main.Renderer;
 import com.ikisoft.sstl.main.Updater;
 
@@ -25,13 +26,15 @@ public class SSTL extends ApplicationAdapter {
 	@Override
 	public void create () {
 
-		DataHandler.load();
-		AssetLoader.load();
-
 		screenWidth = Gdx.graphics.getWidth();
 		screenHeight = Gdx.graphics.getHeight();
+
+		DataHandler.load();
+		AssetLoader.load();
 		updater = new Updater();
 		renderer = new Renderer(updater);
+		StringConstants.loadStrings(updater);
+
 
 		multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(new InputHandler(updater,

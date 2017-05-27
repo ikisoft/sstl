@@ -12,13 +12,16 @@ public class DataHandler {
     public static Preferences prefs;
     public static int healthLevel;
     public static int speedLevel;
+    public static int controlLevel;
     public static int kineticBarrierLevel;
     public static int shieldLevel;
+    public static int vehicleCondition;
     public static int money;
     public static int scrap;
     public static int highscore;
     public static int upgradeSelected;
     public static int shopHelper;
+    public static boolean crateCollected;
 
     public static boolean soundMuted, musicMuted;
 
@@ -30,22 +33,33 @@ public class DataHandler {
         scrap = prefs.getInteger("scrap");
         //highscore = prefs.getInteger("highscore");
 
-        healthLevel = prefs.getInteger("healthlevel");
+        healthLevel = prefs.getInteger("health_level");
         if(healthLevel < 3){
             healthLevel = 3;
         }
-        speedLevel = prefs.getInteger("speedlevel");
+        speedLevel = prefs.getInteger("speed_level");
         if(speedLevel < 1){
             speedLevel = 1;
         }
-        kineticBarrierLevel = prefs.getInteger("barrierlevel");
+        speedLevel = 1;
+        controlLevel = prefs.getInteger("control_level");
+        if(controlLevel < 1){
+            controlLevel = 1;
+        }
+        controlLevel = 5;
+        kineticBarrierLevel = prefs.getInteger("barrier_level");
         if(kineticBarrierLevel < 1){
             kineticBarrierLevel = 1;
         }
-        shieldLevel = prefs.getInteger("shieldlevel");
+        shieldLevel = prefs.getInteger("shield_level");
         if(shieldLevel < 1){
             shieldLevel = 1;
         }
+
+        vehicleCondition = prefs.getInteger("vehicle_condition");
+        vehicleCondition = 100;
+
+        crateCollected = false;
     }
 
     public static void save(){

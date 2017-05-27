@@ -25,12 +25,15 @@ public class Spacecraft {
         position = new Vector2(x, y);
         hitbox = new Rectangle();
         hitbox.setSize(width, height);
+        hitbox.x = position.x;
+        hitbox.y = position.y;
+
         movingLeft = false;
         movingRight = false;
-        velocityRight = 0;
-        velocityLeft = 0;
-        thrustPower = (float) DataHandler.speedLevel / 10; //0.3
+        thrustPower = (float) DataHandler.speedLevel / 10;
         health = DataHandler.healthLevel;
+        velocityLeft = 0;
+        velocityRight = 0;
 
 
 
@@ -38,48 +41,41 @@ public class Spacecraft {
 
     public void update(float delta) {
 
-        System.out.println("Thrustpower: " + thrustPower);
-
         velocityLeft -= 0.01;
         velocityRight -= 0.01;
-
-        if(velocityLeft <= 0)velocityLeft = 0;
-        if(velocityRight <= 0)velocityRight = 0;
-
+        if(velocityLeft < 0)velocityLeft = 0;
+        if(velocityRight < 0)velocityRight = 0;
         position.x -= velocityLeft * 5;
         position.x += velocityRight * 5;
 
-        if(movingLeft){
+
+
+        if(movingLeft && health != 0){
             velocityLeft += thrustPower;
-            if(velocityLeft >= 3)velocityLeft = 3;
+            if(velocityLeft >= 3);
             position.x -= velocityLeft;
             velocityRight -= 0.05;
-
         }
 
-        if(movingRight){
+        if(movingRight && health != 0){
             velocityRight += thrustPower;
-            if(velocityRight >= 3)velocityRight = 3;
+            if(velocityRight >= 3);
             position.x += velocityRight;
             velocityLeft -= 0.05;
-
-
         }
-
-        System.out.println("Velocity Left: " + velocityLeft);
-        System.out.println("Velocity Right: " + velocityRight);
 
         //position
         if (position.x <= 0){
             position.x = 0;
             velocityLeft = 0;
-            velocityRight = 1;
+            velocityRight = 1.5f;
         }
         if (position.x >= 1080 - hitbox.width){
             position.x = 1080 - hitbox.width;
             velocityRight = 0;
-            velocityLeft = 1;
+            velocityLeft = 1.5f;
         }
+
 
         hitbox.x = position.x;
         hitbox.y = position.y;
@@ -146,6 +142,13 @@ public class Spacecraft {
         return movingRight;
     }
 
+    public void setVelocityLeft(float velocityLeft){
+        this.velocityLeft = velocityLeft;
+    }
+
+    public void setVelocityRight(float velocityRight){
+        this.velocityRight = velocityRight;
+    }
     public int getHealth() {
         return health;
     }
