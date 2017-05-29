@@ -1,5 +1,7 @@
 package com.ikisoft.sstl.main;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -10,10 +12,10 @@ import com.ikisoft.sstl.gameobjects.Spacejunk;
 import com.ikisoft.sstl.helpers.AssetLoader;
 import com.ikisoft.sstl.helpers.DataHandler;
 import com.ikisoft.sstl.helpers.LerpHandler;
+import com.ikisoft.sstl.helpers.Timer;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import static com.badlogic.gdx.math.MathUtils.random;
@@ -25,8 +27,11 @@ import static com.badlogic.gdx.math.MathUtils.random;
 public class Updater {
 
     //timer shit
-    long startTime, nanoSeconds;
-    long distance, speed;
+    private long startTime, nanoSeconds;
+    private long distance, speed;
+    private long id;
+    private boolean soundPlayed;
+    private Timer timer;
     private GameState gameState;
     private Spacecraft spacecraft;
     private Spacejunk spacejunk, spacejunk2, spacejunk3, spacejunk4, spacejunk5;
@@ -35,19 +40,29 @@ public class Updater {
     private LerpHandler anchor, crateSplash;
     private boolean gameover, lowhealthPlayed, devEnabled, crateOpened,
             timerStarted;
-    private int moneyThisRun;
+    private int moneyThisRun, lootNumber, randomMeme;
     private Queue<Integer> crateQueue;
     private ArrayList<Integer> crateDrop;
+
+    private Interpolation easAlpha = Interpolation.swingIn;
+    private int lifeTime = 2;
+    private float foleyVolume = 0;
+    private float elapsed = 0;
+    private float itemAlpha = 0;
+    private float progress = 0;
 
     public enum GameState {
 
         START, MAINMENU, RUNNING, PAUSED, GAMEOVER,
-        GAMEOVERSCREEN, OPTIONS, SHOP, INFO, CRATESPLASH, ITEMSPLASH;
+        GAMEOVERSCREEN, OPTIONS, SHIP, ITEMS, SYSTEMS, REPAIR, STATS, INFO,
+        CRATESPLASH, ITEMSPLASH;
     }
 
     public Updater() {
 
+        timer = new Timer();
         gameState = GameState.START;
+        soundPlayed = false;
 
         spacecraft = new Spacecraft(284, 384, 128, 32);
         //cow
@@ -76,6 +91,8 @@ public class Updater {
 
         startTime = 0;
         nanoSeconds = 0;
+        lootNumber = 0;
+        randomMeme = 0;
 
     }
 
@@ -83,7 +100,6 @@ public class Updater {
 
         if (speed <= 0) speed = 1;
         if (speed > 10000) speed = 10000;
-
 
         switch (gameState) {
             case START:
@@ -94,6 +110,19 @@ public class Updater {
                 updateMainmenu();
                 break;
             case RUNNING:
+                AssetLoader.theme.stop();
+
+
+                foleyVolume += Gdx.graphics.getDeltaTime() / 25;
+                if (foleyVolume > 0.5) foleyVolume = 0.5f;
+                //again this has to be done because of android loop gap...
+                if (!soundPlayed) {
+                    id = AssetLoader.spaceFoley.play();
+                    AssetLoader.spaceFoley.setLooping(id, true);
+                    soundPlayed = true;
+                    AssetLoader.spaceFoley.setVolume(id, foleyVolume);
+                }
+
                 timerStarted = false;
                 crateSplash.reset(2000, 800);
                 anchor.reset(200, 3000);
@@ -102,31 +131,33 @@ public class Updater {
             case PAUSED:
                 break;
             case GAMEOVER:
+                randomMeme = random.nextInt(8);
+                updateGameover(delta);
+                AssetLoader.lowhealth.stop();
+                AssetLoader.spaceFoley.stop();
+                soundPlayed = false;
 
-                //TODO change to system current time nanoseconds (works?)
-                //make a class maybe?
-                if (waitFor(5)) {
+                //AssetLoader.explosion.play();
+                if (!gameover) {
+                    AssetLoader.explosion.play();
+
+                    save();
+                    gameover = true;
+
+                }
+
+                if (timer.waitFor(5)) {
                     if (!crateQueue.isEmpty()) {
                         gameState = GameState.CRATESPLASH;
                     } else {
                         gameState = GameState.GAMEOVERSCREEN;
                     }
                 }
-                AssetLoader.lowhealth.stop();
-                if (!gameover) {
-                    save();
-                    //AssetLoader.explosion.play();
-                }
-
-                gameover = true;
-
-                updateGameover(delta);
 
 
                 break;
             case GAMEOVERSCREEN:
                 anchor.getPosition().lerp(anchor.getTarget(), 0.1f);
-
                 break;
             case OPTIONS:
                 updateOptions();
@@ -134,20 +165,33 @@ public class Updater {
             case INFO:
                 updateInfo();
                 break;
-            case SHOP:
+            case SHIP:
+                break;
+            case SYSTEMS:
+                break;
+            case ITEMS:
+                break;
+            case REPAIR:
+                break;
+            case STATS:
                 break;
             case CRATESPLASH:
-
+                progress = 0;
+                lifeTime = 2;
+                elapsed = 0;
+                itemAlpha = 0;
                 anchor.getPosition().lerp(anchor.getTarget(), 0.1f);
                 updateCratesplash();
-
                 break;
             case ITEMSPLASH:
-
+                elapsed += Gdx.graphics.getDeltaTime();
+                progress = Math.min(1f, elapsed / lifeTime);
+                itemAlpha = easAlpha.apply(progress);
             default:
                 break;
         }
     }
+
 
     private boolean waitFor(long x) {
 
@@ -156,9 +200,11 @@ public class Updater {
             startTime = TimeUtils.nanoTime();
             timerStarted = true;
         }
+
         if (TimeUtils.timeSinceNanos(startTime) > nanoSeconds) {
             return true;
         }
+
         return false;
     }
 
@@ -173,15 +219,15 @@ public class Updater {
         distance = 0;
         speed = 0;
         startTime = 0;
+        timer.resetTime();
         lowhealthPlayed = false;
         gameover = false;
         moneyThisRun = 0;
         crateQueue.clear();
         crateOpened = false;
 
-        for(Integer i : crateQueue){
+        for (Integer i : crateQueue) {
             crateQueue.poll();
-
         }
 
     }
@@ -395,7 +441,7 @@ public class Updater {
             if (!cashstack.getCollected()) {
                 cashstack.setCollected();
                 AssetLoader.cashSound.play();
-                moneyThisRun += 50;
+                moneyThisRun += 100;
             }
         }
 
@@ -413,6 +459,7 @@ public class Updater {
 
 
         if (crateQueue.poll() == 1) {
+            AssetLoader.woodenCrateBreak.play();
             generateLoot();
             gameState = GameState.ITEMSPLASH;
         }
@@ -421,24 +468,28 @@ public class Updater {
     private void generateLoot() {
 
         for (int i = 0; i < 3; i++) {
-            crateDrop.add(i, random.nextInt(100));
+            lootNumber = random.nextInt(100);
+
+            if (lootNumber >= 95 && lootNumber <= 100) {
+                crateDrop.add(i, 4);
+            } else if (lootNumber >= 85 && lootNumber < 95) {
+                crateDrop.add(i, 3);
+            } else {
+                crateDrop.add(i, random.nextInt(3));
+            }
         }
 
         for (int i = 0; i < 3; i++) {
-            if (crateDrop.get(i) >= 0 && crateDrop.get(i) <= 30) {
-                crateDrop.add(i, 1);
-
-            } else if (crateDrop.get(i) > 30 && crateDrop.get(i) <= 60) {
-                crateDrop.add(i, 2);
-
-            } else if (crateDrop.get(i) > 60 && crateDrop.get(i) <= 90) {
-                crateDrop.add(i, 3);
-
-            } else if (crateDrop.get(i) > 90 && crateDrop.get(i) <= 98) {
-                crateDrop.add(i, 4);
-
-            } else if (crateDrop.get(i) > 98 && crateDrop.get(i) <= 100) {
-                crateDrop.add(i, 5);
+            if (crateDrop.get(i) == 4) {
+                DataHandler.core++;
+            } else if (crateDrop.get(i) == 3) {
+                DataHandler.rod++;
+            } else if (crateDrop.get(i) == 2) {
+                DataHandler.scrap++;
+            } else if (crateDrop.get(i) == 1) {
+                DataHandler.money += 200;
+            } else if (crateDrop.get(i) == 0) {
+                DataHandler.money += 100;
             }
         }
     }
@@ -540,6 +591,14 @@ public class Updater {
 
     public boolean getCrateOpened() {
         return crateOpened;
+    }
+
+    public float getItemAlpha() {
+        return itemAlpha;
+    }
+
+    public int getRandomMeme(){
+        return randomMeme;
     }
 
 

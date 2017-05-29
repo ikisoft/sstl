@@ -18,7 +18,8 @@ public class DataHandler {
     public static int vehicleCondition;
     public static int money;
     public static int scrap;
-    public static int highscore;
+    public static int core;
+    public static int rod;
     public static int upgradeSelected;
     public static int shopHelper;
     public static boolean crateCollected;
@@ -31,12 +32,15 @@ public class DataHandler {
         prefs = Gdx.app.getPreferences("SSTL_prefs");
         money = prefs.getInteger("money");
         scrap = prefs.getInteger("scrap");
+        rod = prefs.getInteger("rod");
+        core = prefs.getInteger("core");
         //highscore = prefs.getInteger("highscore");
 
         healthLevel = prefs.getInteger("health_level");
         if(healthLevel < 3){
             healthLevel = 3;
         }
+
         speedLevel = prefs.getInteger("speed_level");
         if(speedLevel < 1){
             speedLevel = 1;
@@ -64,10 +68,12 @@ public class DataHandler {
 
     public static void save(){
 
-        //prefs.putInteger("highscore", highscore);
         prefs.putInteger("money", money);
-        //prefs.putInteger("health", healthLevel);
-        //prefs.putInteger("speedlevel", speedLevel);
+        prefs.putInteger("scrap", scrap);
+        prefs.putInteger("rod", rod);
+        prefs.putInteger("core", core);
+        prefs.putInteger("health", healthLevel);
+        prefs.putInteger("speedlevel", speedLevel);
 
         prefs.putBoolean("soundMuted", soundMuted);
         prefs.putBoolean("musicMuted", musicMuted);

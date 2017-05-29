@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by maxikahe on 19.5.2017.
@@ -33,29 +34,30 @@ public class AssetLoader {
             speedTier2, speedTier2Left, speedTier2Right,
             armorTier1, armorTier1Left, armorTier1Right,
             armorTier2, armorTier2Left, armorTier2Right,
-            afterburner, speedLine, core, rod,
+            afterburner, speedLine, core, rod, lootTexture1, lootTexture2, lootTexture3,
+            itemTexture, barrierTexture,
 
-            speedUp1, kineticShield, barrier, armorUp2, armorUp3,
-            soundMuted, musicMuted, moneyIcon, scrapIcon;
+    speedUp1, kineticShield, barrier, armorUp2, armorUp3,
+            soundMuted, musicMuted, moneyIcon, scrapIcon, coreIcon, rodIcon;
 
     public static Sprite
             cow, fish, can, healthBarFrame, healthBar, coinSprite,
             glowGreenSprite, glowYellowSprite;
 
-    public static BitmapFont font, fontSmall, fontMedium;
+    public static BitmapFont font, fontSmall, fontSmallish, fontMedium;
 
     public static Music theme, lowhealth;
 
     public static Sound
-            click,
+            click, click2, click3, click4, thruster1, thruster2, spaceFoley,
             spacecraftHit, spacecraftHit2, spacecraftHit3, spacecraftHit4, spacecraftHit5,
-            explosion, cashSound, moo;
+            explosion, cashSound, moo, woodenCrateBreak;
 
     public static float volume, lowhealthVolume;
+    private static Array<TextureRegion> lootArray;
 
 
-
-    public static void load(){
+    public static void load() {
 
         texture = new Texture(Gdx.files.internal("textures/textureatlas.png"));
         spacecraft = new TextureRegion(texture, 0, 0, 256, 256);
@@ -78,8 +80,8 @@ public class AssetLoader {
         junk6 = new TextureRegion(texture, 1280, 768, 256, 256);
         junk7 = new TextureRegion(texture, 1536, 768, 256, 256);
         junk8 = new TextureRegion(texture, 1792, 768, 256, 256);
-        cashstack = new TextureRegion(texture, 2048, 768, 256, 256 );
-        coin = new TextureRegion(texture, 2304, 768, 256, 256 );
+        cashstack = new TextureRegion(texture, 2048, 768, 256, 256);
+        coin = new TextureRegion(texture, 2304, 768, 256, 256);
         coinSprite = new Sprite(coin);
         glowGreen = new TextureRegion(texture, 2560, 768, 256, 256);
         glowGreenSprite = new Sprite(glowGreen);
@@ -112,9 +114,8 @@ public class AssetLoader {
         wireframe6 = new TextureRegion(texture, 1280, 1792, 256, 256);
         wireframe7 = new TextureRegion(texture, 1536, 1792, 256, 256);
         wireframe8 = new TextureRegion(texture, 1792, 1792, 256, 256);
-
         TextureRegion[] wireFrame = {wireframe1, wireframe2, wireframe3,
-        wireframe4, wireframe5, wireframe6, wireframe7, wireframe8};
+                wireframe4, wireframe5, wireframe6, wireframe7, wireframe8};
         wireframeAnimation = new Animation(0.5f, wireFrame);
         wireframeAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
@@ -140,12 +141,23 @@ public class AssetLoader {
         armorUp3 = new TextureRegion(texture, 1024, 2304, 256, 256);
         soundMuted = new TextureRegion(texture, 1280, 2304, 256, 256);
         musicMuted = new TextureRegion(texture, 1536, 2304, 256, 256);
-        moneyIcon = new TextureRegion(texture, 1792, 2304, 256, 256);
+        moneyIcon = new TextureRegion(texture, 1792, 2304, 128, 128);
         scrapIcon = new TextureRegion(texture, 2048, 2304, 256, 256);
+        coreIcon = new TextureRegion(texture, 1792, 2432, 128, 128);
+        rodIcon = new TextureRegion(texture, 1920, 2432, 128, 128);
+        itemTexture = new TextureRegion(texture, 2304, 2304, 256, 256);
+        barrierTexture = new TextureRegion(texture, 3078, 2048, 256, 256);
 
 
         afterburner = new TextureRegion(texture, 3840, 0, 256, 256);
         speedLine = new TextureRegion(texture, 3840, 256, 256, 256);
+
+        lootArray = new Array<TextureRegion>(16);
+        lootArray.add(cashstack);
+        lootArray.add(cashstackBig);
+        lootArray.add(scrap);
+        lootArray.add(rod);
+        lootArray.add(core);
 
         font = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
         font.getData().setScale(2f, 2f);
@@ -156,6 +168,9 @@ public class AssetLoader {
         fontMedium = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
         fontMedium.getData().setScale(1.5f, 1.5f);
         fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+        fontSmallish = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
+        fontSmallish.getData().setScale(1.25f, 1.25f);
+        fontSmallish.setColor(0.141f, 0.848f, 0.407f, 1f);
 
 
         theme = Gdx.audio.newMusic(Gdx.files.internal("sounds/hello_world_msu.mp3"));
@@ -175,12 +190,27 @@ public class AssetLoader {
         explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/space_explosion.wav"));
         cashSound = Gdx.audio.newSound(Gdx.files.internal("sounds/coin2.wav"));
         moo = Gdx.audio.newSound(Gdx.files.internal("sounds/moo.wav"));
-
+        woodenCrateBreak = Gdx.audio.newSound(Gdx.files.internal("sounds/woodencratebreak.wav"));
+        click2 = Gdx.audio.newSound(Gdx.files.internal("sounds/buttonclick.wav"));
+        click3 = Gdx.audio.newSound(Gdx.files.internal("sounds/buttonclick5.wav"));
+        click4 = Gdx.audio.newSound(Gdx.files.internal("sounds/buttonclick6.wav"));
+        spaceFoley = Gdx.audio.newSound(Gdx.files.internal("sounds/spacefoley.wav"));
+        thruster1 = Gdx.audio.newSound(Gdx.files.internal("sounds/thruster1.wav"));
+        thruster2 = Gdx.audio.newSound(Gdx.files.internal("sounds/thruster2.wav"));
 
 
     }
 
-    public static void dispose(){
+    public static void selectLootTexture(int loot1, int loot2, int loot3) {
+
+        lootTexture1 = lootArray.get(loot1);
+        lootTexture2 = lootArray.get(loot2);
+        lootTexture3 = lootArray.get(loot3);
+
+
+    }
+
+    public static void dispose() {
 
         texture.dispose();
         theme.dispose();

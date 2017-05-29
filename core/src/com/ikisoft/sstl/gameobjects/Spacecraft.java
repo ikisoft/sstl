@@ -2,6 +2,7 @@ package com.ikisoft.sstl.gameobjects;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.ikisoft.sstl.helpers.AssetLoader;
 import com.ikisoft.sstl.helpers.DataHandler;
 
 /**
@@ -12,9 +13,10 @@ public class Spacecraft {
 
     private Vector2 position;
     private Rectangle hitbox;
-    private boolean movingLeft, movingRight;
+    private boolean movingLeft, movingRight, soundPlayed;
     private float velocityLeft, velocityRight, thrustPower;
     private int health;
+    private float energy;
 
 
     public Spacecraft(float x, float y, float width, float height) {
@@ -34,12 +36,15 @@ public class Spacecraft {
         health = DataHandler.healthLevel;
         velocityLeft = 0;
         velocityRight = 0;
-
-
+        energy = 100;
+        soundPlayed = false;
 
     }
 
     public void update(float delta) {
+
+
+        energy += 0.1;
 
         velocityLeft -= 0.01;
         velocityRight -= 0.01;
@@ -51,15 +56,29 @@ public class Spacecraft {
 
 
         if(movingLeft && health != 0){
+
+
+            //No way around this because of android audio playback and libgdx shittiness
+            //must use gdx.sound instead of music...
+            if(!soundPlayed){
+                long id = AssetLoader.thruster1.play();
+                AssetLoader.thruster1.setLooping(id, true);
+                soundPlayed = true;
+            }
             velocityLeft += thrustPower;
-            if(velocityLeft >= 3);
             position.x -= velocityLeft;
             velocityRight -= 0.05;
         }
 
         if(movingRight && health != 0){
+            //No way around this because of android audio playback and libgdx shittiness
+            //must use gdx.sound instead of music...
+            if(!soundPlayed){
+                long id = AssetLoader.thruster1.play();
+                AssetLoader.thruster1.setLooping(id, true);
+                soundPlayed = true;
+            }
             velocityRight += thrustPower;
-            if(velocityRight >= 3);
             position.x += velocityRight;
             velocityLeft -= 0.05;
         }
@@ -92,7 +111,7 @@ public class Spacecraft {
         health = DataHandler.healthLevel;
         velocityLeft = 0;
         velocityRight = 0;
-
+        energy = 100;
 
     }
 
@@ -117,6 +136,8 @@ public class Spacecraft {
     }
 
     public void setMovingLeftFalse() {
+        AssetLoader.thruster1.stop();
+        soundPlayed = false;
 
         movingLeft = false;
     }
@@ -129,7 +150,8 @@ public class Spacecraft {
     }
 
     public void setMovingRightFalse() {
-
+        AssetLoader.thruster1.stop();
+        soundPlayed = false;
         movingRight = false;
 
     }
@@ -156,6 +178,14 @@ public class Spacecraft {
     public void setHealth() {
         health -= 1;
         System.out.println(health);
+    }
+
+    public int getEnergy(){
+        return (int) energy;
+    }
+
+    public void setEnergy(){
+
     }
 
 

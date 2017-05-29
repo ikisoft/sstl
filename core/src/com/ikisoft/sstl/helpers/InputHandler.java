@@ -84,14 +84,11 @@ public class InputHandler implements InputProcessor {
 
                 if (menuButton.isDown(x, y, 540, 1000)) {
                     updater.setGameState(Updater.GameState.RUNNING);
-                }
-                if (menuButton.isDown(x, y, 540, 1130)) {
-                    updater.setGameState(Updater.GameState.SHOP);
-                }
-                if (menuButton.isDown(x, y, 540, 1270)) {
+                } else if (menuButton.isDown(x, y, 540, 1130)) {
+                    updater.setGameState(Updater.GameState.SHIP);
+                } else if (menuButton.isDown(x, y, 540, 1270)) {
                     updater.setGameState(Updater.GameState.INFO);
-                }
-                if (menuButton.isDown(x, y, 540, 1430)) {
+                } else if (menuButton.isDown(x, y, 540, 1430)) {
                     updater.setGameState(Updater.GameState.OPTIONS);
                 }
 
@@ -105,6 +102,7 @@ public class InputHandler implements InputProcessor {
                 }
 
                 //fuck touch input
+                //bubble gum fix for start game move bug...
                 if (!fuckThis) {
                     updater.getSpacecraft().setMovingLeftFalse();
                     updater.getSpacecraft().setMovingRightFalse();
@@ -120,10 +118,8 @@ public class InputHandler implements InputProcessor {
             case GAMEOVERSCREEN:
 
                 if (menuButton.isDown(x, y, 540, 1130)) {
-                    updater.setGameState(Updater.GameState.SHOP);
-                }
-
-                if (menuButton.isDown(x, y, 540, 1430)) {
+                    updater.setGameState(Updater.GameState.SHIP);
+                } else if (menuButton.isDown(x, y, 540, 1430)) {
                     updater.resetGame();
                 }
 
@@ -135,10 +131,26 @@ public class InputHandler implements InputProcessor {
                     updater.setGameState(Updater.GameState.START);
                 }
 
-
                 break;
 
-            case SHOP:
+            case SHIP:
+
+                //Defensive Systems
+                if (menuButton.isDown(x, y, 540, 1007)) {
+                    updater.setGameState(Updater.GameState.SYSTEMS);
+                } else if (menuButton.isDown(x, y, 540, 1156)) {
+                    updater.setGameState(Updater.GameState.ITEMS);
+                } else if (menuButton.isDown(x, y, 540, 1310)) {
+                    updater.setGameState(Updater.GameState.REPAIR);
+                } else if (menuButton.isDown(x, y, 540, 1458)) {
+                    updater.setGameState(Updater.GameState.STATS);
+                } else if (menuButton.isDown(x, y, 538, 1650)) {
+                    updater.resetGame();
+                    updater.setGameState(Updater.GameState.RUNNING);
+                }
+
+                break;
+            case SYSTEMS:
 
                 //HEALTH
                 if (shopButton.isDown(x, y, 162, 652)) {
@@ -158,7 +170,7 @@ public class InputHandler implements InputProcessor {
                 }
 
                 //SPEED
-                if (shopButton.isDown(x, y, 408, 652)) {
+                else if (shopButton.isDown(x, y, 408, 652)) {
 
                     DataHandler.upgradeSelected = 2;
 
@@ -175,28 +187,52 @@ public class InputHandler implements InputProcessor {
                 }
 
                 //Kinetic Barrier
-                if (shopButton.isDown(x, y, 670, 652)) {
+                else if (shopButton.isDown(x, y, 670, 652)) {
 
                     DataHandler.upgradeSelected = 3;
 
                 }
 
                 //energy shield
-                if (shopButton.isDown(x, y, 940, 652)) {
+                else if (shopButton.isDown(x, y, 940, 652)) {
 
                     DataHandler.upgradeSelected = 4;
 
                 }
 
                 //Back
-                if (menuButton.isDown(x, y, 538, 1600)) {
+                else if (menuButton.isDown(x, y, 538, 1600)) {
 
-                    updater.resetGame();
-                    updater.setGameState(Updater.GameState.RUNNING);
+                    updater.setGameState(Updater.GameState.SHIP);
                 }
 
 
                 break;
+
+            case ITEMS:
+
+                if (menuButton.isDown(x, y, 538, 1600)) {
+
+                    updater.setGameState(Updater.GameState.SHIP);
+                }
+
+                break;
+
+            case REPAIR:
+
+                if (menuButton.isDown(x, y, 538, 1600)) {
+
+                    updater.setGameState(Updater.GameState.SHIP);
+                }
+
+                break;
+
+            case STATS:
+
+                if (menuButton.isDown(x, y, 538, 1600)) {
+
+                    updater.setGameState(Updater.GameState.SHIP);
+                }
 
             case OPTIONS:
 
@@ -211,9 +247,7 @@ public class InputHandler implements InputProcessor {
 
                 if (menuButton.isDown(x, y, 546, 1706)) {
                     updater.setGameState(Updater.GameState.GAMEOVERSCREEN);
-                }
-
-                if (menuButton.isDown(x, y, 540, 1256)) {
+                } else if (menuButton.isDown(x, y, 540, 1256)) {
                     updater.openCrate();
                 }
                 break;
@@ -222,9 +256,9 @@ public class InputHandler implements InputProcessor {
 
                 if (menuButton.isDown(x, y, 546, 1706)) {
 
-                    if(updater.getCrateQueue().isEmpty()){
+                    if (updater.getCrateQueue().isEmpty()) {
                         updater.setGameState(Updater.GameState.GAMEOVERSCREEN);
-                    }else{
+                    } else {
                         updater.setGameState(Updater.GameState.CRATESPLASH);
                     }
 
@@ -247,9 +281,7 @@ public class InputHandler implements InputProcessor {
 
                 if (x < 540) {
                     updater.getSpacecraft().setMovingLeftFalse();
-                }
-
-                if (x > 540) {
+                } else if (x > 540) {
                     updater.getSpacecraft().setMovingRightFalse();
                 }
 
