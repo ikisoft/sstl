@@ -4,6 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.ikisoft.sstl.main.Updater;
+import com.ikisoft.sstl.main.UpgradeHandler;
+import com.sun.org.apache.bcel.internal.generic.DADD;
+
+import javax.xml.crypto.Data;
 
 /**
  * Created by maxikahe on 19.5.2017.
@@ -154,58 +158,31 @@ public class InputHandler implements InputProcessor {
 
                 //HEALTH
                 if (shopButton.isDown(x, y, 162, 652)) {
-
                     DataHandler.upgradeSelected = 1;
 
-                    /*if(DataHandler.healthLevel < 10){
-
-                        if(DataHandler.money >= 100 * DataHandler.healthLevel){
-                            if(DataHandler.money - DataHandler.healthLevel >= 0){
-                                DataHandler.healthLevel++;
-                                DataHandler.money -= 100 * DataHandler.healthLevel;
-
-                            }
-                        }
-                    }*/
-                }
-
-                //SPEED
-                else if (shopButton.isDown(x, y, 408, 652)) {
-
+                } else if (shopButton.isDown(x, y, 408, 652)) {
                     DataHandler.upgradeSelected = 2;
 
-                    /*if(DataHandler.speedLevel < 10) {
-
-                        if (DataHandler.money >= 75 * DataHandler.speedLevel) {
-                            if (DataHandler.money - DataHandler.speedLevel >= 0) {
-                                DataHandler.speedLevel++;
-                                DataHandler.money -= 75 * DataHandler.speedLevel;
-
-                            }
-                        }
-                    }*/
-                }
-
-                //Kinetic Barrier
-                else if (shopButton.isDown(x, y, 670, 652)) {
-
+                } else if (shopButton.isDown(x, y, 670, 652)) {
                     DataHandler.upgradeSelected = 3;
 
-                }
-
-                //energy shield
-                else if (shopButton.isDown(x, y, 940, 652)) {
-
+                } else if (shopButton.isDown(x, y, 940, 652)) {
                     DataHandler.upgradeSelected = 4;
 
-                }
-
-                //Back
-                else if (menuButton.isDown(x, y, 538, 1600)) {
-
+                } else if (menuButton.isDown(x, y, 538, 1600)) {
                     updater.setGameState(Updater.GameState.SHIP);
-                }
 
+                }else if(menuButton.isDown(x, y, 540, 1206)){
+                    if(DataHandler.upgradeSelected == 1){
+                        UpgradeHandler.upgradeArmor();
+                    } else if (DataHandler.upgradeSelected == 2){
+                        UpgradeHandler.upgradeThruster();
+                    } else if (DataHandler.upgradeSelected == 3){
+                        UpgradeHandler.upgradeKinetic();
+                    } else if (DataHandler.upgradeSelected == 4){
+                        UpgradeHandler.upgradeEnergyShield();
+                    }
+                }
 
                 break;
 
@@ -248,6 +225,8 @@ public class InputHandler implements InputProcessor {
                 if (menuButton.isDown(x, y, 546, 1706)) {
                     updater.setGameState(Updater.GameState.GAMEOVERSCREEN);
                 } else if (menuButton.isDown(x, y, 540, 1256)) {
+
+
                     updater.openCrate();
                 }
                 break;

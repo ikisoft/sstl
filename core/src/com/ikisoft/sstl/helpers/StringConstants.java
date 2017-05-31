@@ -27,7 +27,7 @@ public class StringConstants {
         logoText = "   (Slightly)\nSlower Than Light";
         infoText = "GFH JAM 2017\n" +
                 "  ikisoft";
-        shopText = "ARMOR: " + DataHandler.healthLevel + "\n" +
+                shopText = "ARMOR: " + DataHandler.healthLevel + "\n" +
                 "THRUSTERS: " + DataHandler.speedLevel + "\n" +
                 "KINETIC BARRIER: " + DataHandler.kineticBarrierLevel + "\n" +
                 "ENERGY SHIELD: " + DataHandler.shieldLevel;
@@ -54,7 +54,7 @@ public class StringConstants {
                 "will suffer. If vehicle\ncondition goes " +
                 "to zero, game over.";
 
-        random1 ="in space,\nnobody can hear you scream. ;)";
+        random1 ="in space, nobody can hear\nyou scream. ;)";
         random2 = "did you know that the\nmoon landing was 120 years ago?";
         random3 = "bloody space pirates.";
         random4 = "the moon is actually cheese.";
@@ -62,8 +62,8 @@ public class StringConstants {
         random6 = "did you know that if a tree\nfalls in space, no one hears it?";
         random7 = "the moonlandings were faked\n" +
                 "by the US government to make\n" +
-                "soviet union go bankrupt";
-        random8 = "if  the majority of earth is water,\n" +
+                "the soviet union go bankrupt.";
+        random8 = "if the majority of earth is water,\n" +
                 "would a planet that is mostly earth\n" +
                 "be called water?";
 

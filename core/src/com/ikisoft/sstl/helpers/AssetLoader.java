@@ -35,10 +35,11 @@ public class AssetLoader {
             armorTier1, armorTier1Left, armorTier1Right,
             armorTier2, armorTier2Left, armorTier2Right,
             afterburner, speedLine, core, rod, lootTexture1, lootTexture2, lootTexture3,
-            itemTexture, barrierTexture,
-
-    speedUp1, kineticShield, barrier, armorUp2, armorUp3,
-            soundMuted, musicMuted, moneyIcon, scrapIcon, coreIcon, rodIcon;
+            itemTexture, barrierTexture, kineticTexture, dropGlowGreen, dropGlowBlue,
+            dropGlowPurple, dropGlowTexture1, dropGlowTexture2, dropGlowTexture3,
+            speedUp1, kineticShield, barrier, armorUp2, armorUp3,
+            soundMuted, musicMuted, moneyIcon, scrapIcon, coreIcon, rodIcon,
+            tint, radioactiveWaste, bigSteelCrate, steelCrate;
 
     public static Sprite
             cow, fish, can, healthBarFrame, healthBar, coinSprite,
@@ -51,10 +52,14 @@ public class AssetLoader {
     public static Sound
             click, click2, click3, click4, thruster1, thruster2, spaceFoley,
             spacecraftHit, spacecraftHit2, spacecraftHit3, spacecraftHit4, spacecraftHit5,
-            explosion, cashSound, moo, woodenCrateBreak;
+            explosion, cashSound, moo, woodenCrateBreak, shieldBreak, upgrade;
+
+    public static String lootText1, lootText2, lootText3;
 
     public static float volume, lowhealthVolume;
     private static Array<TextureRegion> lootArray;
+    private static Array<TextureRegion> lootColorArray;
+    private static Array<String> lootStringArray;
 
 
     public static void load() {
@@ -66,7 +71,8 @@ public class AssetLoader {
         asteroid = new TextureRegion(texture, 0, 256, 256, 256);
         planet = new TextureRegion(texture, 256, 256, 256, 256);
         bg = new TextureRegion(texture, 0, 512, 256, 256);
-        particleEffect = new TextureRegion(texture, 256, 512, 256, 256);
+        tint = new TextureRegion(texture, 256, 512, 256, 256);
+        particleEffect = new TextureRegion(texture, 256, 512, 256, 255);
         //cow
         junk = new TextureRegion(texture, 0, 768, 256, 256);
         cow = new Sprite(junk);
@@ -147,17 +153,36 @@ public class AssetLoader {
         rodIcon = new TextureRegion(texture, 1920, 2432, 128, 128);
         itemTexture = new TextureRegion(texture, 2304, 2304, 256, 256);
         barrierTexture = new TextureRegion(texture, 3078, 2048, 256, 256);
-
-
+        kineticTexture = new TextureRegion(texture, 3328, 2048, 256, 256);
+        dropGlowBlue = new TextureRegion(texture, 0, 2560, 256, 256);
+        dropGlowGreen = new TextureRegion(texture, 256, 2560, 256, 256);
+        dropGlowPurple = new TextureRegion(texture, 512, 2560, 256, 256);
+        radioactiveWaste = new TextureRegion(texture, 768, 256, 256, 256);
+        steelCrate = new TextureRegion(texture, 3840, 768, 256, 256);
+        bigSteelCrate = new TextureRegion(texture, 512, 3584, 256, 256);
         afterburner = new TextureRegion(texture, 3840, 0, 256, 256);
         speedLine = new TextureRegion(texture, 3840, 256, 256, 256);
 
+        lootColorArray = new Array<TextureRegion>(16);
+        lootColorArray.add(dropGlowGreen);
+        lootColorArray.add(dropGlowGreen);
+        lootColorArray.add(dropGlowGreen);
+        lootColorArray.add(dropGlowBlue);
+        lootColorArray.add(dropGlowPurple);
+
         lootArray = new Array<TextureRegion>(16);
-        lootArray.add(cashstack);
-        lootArray.add(cashstackBig);
-        lootArray.add(scrap);
-        lootArray.add(rod);
-        lootArray.add(core);
+        lootArray.add(cashstack); //green
+        lootArray.add(cashstackBig); //green
+        lootArray.add(scrap); //green
+        lootArray.add(rod); //blue
+        lootArray.add(core); //purple
+
+        lootStringArray = new Array<String>(16);
+        lootStringArray.add("- 100$");
+        lootStringArray.add("- 200$");
+        lootStringArray.add("- metal scrap");
+        lootStringArray.add("- radioactive substance");
+        lootStringArray.add("- Radioactive core");
 
         font = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
         font.getData().setScale(2f, 2f);
@@ -197,6 +222,8 @@ public class AssetLoader {
         spaceFoley = Gdx.audio.newSound(Gdx.files.internal("sounds/spacefoley.wav"));
         thruster1 = Gdx.audio.newSound(Gdx.files.internal("sounds/thruster1.wav"));
         thruster2 = Gdx.audio.newSound(Gdx.files.internal("sounds/thruster2.wav"));
+        shieldBreak = Gdx.audio.newSound(Gdx.files.internal("sounds/shieldbreak_warning.wav"));
+        upgrade = Gdx.audio.newSound(Gdx.files.internal("sounds/upgradesound.wav"));
 
 
     }
@@ -206,6 +233,16 @@ public class AssetLoader {
         lootTexture1 = lootArray.get(loot1);
         lootTexture2 = lootArray.get(loot2);
         lootTexture3 = lootArray.get(loot3);
+        dropGlowTexture1 = lootColorArray.get(loot1);
+        dropGlowTexture2 = lootColorArray.get(loot2);
+        dropGlowTexture3 = lootColorArray.get(loot3);
+        lootText1 = lootStringArray.get(loot1);
+        lootText2 = lootStringArray.get(loot2);
+        lootText3 = lootStringArray.get(loot3);
+
+
+
+
 
 
     }

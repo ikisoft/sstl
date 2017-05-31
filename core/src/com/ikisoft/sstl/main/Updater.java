@@ -3,6 +3,7 @@ package com.ikisoft.sstl.main;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.ikisoft.sstl.gameobjects.Crate;
@@ -37,6 +38,7 @@ public class Updater {
     private Spacejunk spacejunk, spacejunk2, spacejunk3, spacejunk4, spacejunk5;
     private Money coin, cashstack;
     private Crate woodenCrate;
+    private Crate steelCrate;
     private LerpHandler anchor, crateSplash;
     private boolean gameover, lowhealthPlayed, devEnabled, crateOpened,
             timerStarted;
@@ -78,7 +80,8 @@ public class Updater {
         coin = new Money(40, 40, this, 10, 2050);
         cashstack = new Money(100, 100, this, 50, 5000);
         //frequency 50k
-        woodenCrate = new Crate(256, 256, this, 2500);
+        woodenCrate = new Crate(256, 256, this, 50000);
+        steelCrate = new Crate(256, 256, this, 150000);
         anchor = new LerpHandler(200, 3000, 200, 1536);
         crateSplash = new LerpHandler(1000, 800, 300, 800);
         distance = 0;
@@ -97,6 +100,7 @@ public class Updater {
     }
 
     public void update(float delta) {
+        spacecraft.setHit(false);
 
         if (speed <= 0) speed = 1;
         if (speed > 10000) speed = 10000;
@@ -131,6 +135,7 @@ public class Updater {
             case PAUSED:
                 break;
             case GAMEOVER:
+
                 randomMeme = random.nextInt(8);
                 updateGameover(delta);
                 AssetLoader.lowhealth.stop();
@@ -139,8 +144,10 @@ public class Updater {
 
                 //AssetLoader.explosion.play();
                 if (!gameover) {
-                    AssetLoader.explosion.play();
 
+
+                    DataHandler.vehicleCondition -= 3;
+                    AssetLoader.explosion.play();
                     save();
                     gameover = true;
 
@@ -295,6 +302,7 @@ public class Updater {
         spacejunk5.update(delta);
         coin.update(delta);
         cashstack.update(delta);
+        woodenCrate.update(delta);
         //resetGame();
     }
 
@@ -305,9 +313,10 @@ public class Updater {
 
     private void updateCollision() {
 
+
         //Cow
         if (Intersector.overlaps(spacecraft.getHitbox(), spacejunk.getHitbox())) {
-
+            spacecraft.setHit(true);
 
             if (spacecraft.getHealth() == 0) {
                 spacejunk.setDestroyed();
@@ -318,15 +327,20 @@ public class Updater {
             if (!spacejunk.getDestroyed()) {
 
                 spacejunk.setDestroyed();
-                spacecraft.setHealth();
-                speed -= 500;
+                speed -= 500 / DataHandler.kineticBarrierLevel;
 
-                if (random.nextInt(1) == 0) {
-                    spacecraft.setVelocityLeft(3);
+                System.err.println(spacecraft.getEnergyDestroyed());
+                if (spacecraft.getEnergyDestroyed()) {
+                    spacecraft.setHealth();
+                }
+                spacecraft.setEnergy(100);
+
+                if (random.nextInt(2) == 0) {
+                    spacecraft.setVelocityLeft((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
                     spacecraft.setVelocityRight(0);
                 } else {
                     spacecraft.setVelocityLeft(0);
-                    spacecraft.setVelocityRight(3);
+                    spacecraft.setVelocityRight((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
                 }
 
                 AssetLoader.spacecraftHit.play();
@@ -339,6 +353,7 @@ public class Updater {
         }
 
         if (Intersector.overlaps(spacecraft.getHitbox(), spacejunk2.getHitbox())) {
+            spacecraft.setHit(true);
 
             if (spacecraft.getHealth() == 0) {
                 spacejunk2.setDestroyed();
@@ -347,8 +362,21 @@ public class Updater {
 
             if (!spacejunk2.getDestroyed()) {
                 spacejunk2.setDestroyed();
-                spacecraft.setHealth();
-                speed -= 100;
+
+                if (spacecraft.getEnergyDestroyed()) {
+                    spacecraft.setHealth();
+                }
+
+                spacecraft.setEnergy(100);
+                speed -= 100 / DataHandler.kineticBarrierLevel;
+
+                if (random.nextInt(2) == 0) {
+                    spacecraft.setVelocityLeft((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
+                    spacecraft.setVelocityRight(0);
+                } else {
+                    spacecraft.setVelocityLeft(0);
+                    spacecraft.setVelocityRight((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
+                }
 
                 AssetLoader.spacecraftHit3.play();
 
@@ -359,7 +387,7 @@ public class Updater {
         }
 
         if (Intersector.overlaps(spacecraft.getHitbox(), spacejunk3.getHitbox())) {
-
+            spacecraft.setHit(true);
             if (spacecraft.getHealth() == 0) {
                 spacejunk3.setDestroyed();
                 gameState = GameState.GAMEOVER;
@@ -367,19 +395,31 @@ public class Updater {
 
             if (!spacejunk3.getDestroyed()) {
                 spacejunk3.setDestroyed();
-                spacecraft.setHealth();
-                speed -= 150;
+
+                if (spacecraft.getEnergyDestroyed()) {
+                    spacecraft.setHealth();
+                }
+                spacecraft.setEnergy(100);
+
+                speed -= 150 / DataHandler.kineticBarrierLevel;
+
+                if (random.nextInt(2) == 0) {
+                    spacecraft.setVelocityLeft((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
+                    spacecraft.setVelocityRight(0);
+                } else {
+                    spacecraft.setVelocityLeft(0);
+                    spacecraft.setVelocityRight((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
+                }
 
                 AssetLoader.spacecraftHit5.play();
 
             }
 
-
             //apple
         }
 
         if (Intersector.overlaps(spacecraft.getHitbox(), spacejunk4.getHitbox())) {
-
+            spacecraft.setHit(true);
             if (spacecraft.getHealth() == 0) {
                 spacejunk4.setDestroyed();
                 gameState = GameState.GAMEOVER;
@@ -388,8 +428,20 @@ public class Updater {
 
             if (!spacejunk4.getDestroyed()) {
                 spacejunk4.setDestroyed();
-                spacecraft.setHealth();
-                speed -= 100;
+
+                if (spacecraft.getEnergyDestroyed()) {
+                    spacecraft.setHealth();
+                }
+                spacecraft.setEnergy(100);
+                speed -= 100 / DataHandler.kineticBarrierLevel;
+
+                if (random.nextInt(2) == 0) {
+                    spacecraft.setVelocityLeft((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
+                    spacecraft.setVelocityRight(0);
+                } else {
+                    spacecraft.setVelocityLeft(0);
+                    spacecraft.setVelocityRight((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
+                }
 
                 AssetLoader.spacecraftHit4.play();
 
@@ -399,7 +451,7 @@ public class Updater {
         }
 
         if (Intersector.overlaps(spacecraft.getHitbox(), spacejunk5.getHitbox())) {
-
+            spacecraft.setHit(true);
             if (spacecraft.getHealth() == 0) {
                 spacejunk5.setDestroyed();
                 gameState = GameState.GAMEOVER;
@@ -408,15 +460,19 @@ public class Updater {
 
             if (!spacejunk5.getDestroyed()) {
                 spacejunk5.setDestroyed();
-                spacecraft.setHealth();
-                speed -= 350;
 
-                if (random.nextInt(1) == 0) {
-                    spacecraft.setVelocityLeft(3);
+                if (spacecraft.getEnergyDestroyed()) {
+                    spacecraft.setHealth();
+                }
+                spacecraft.setEnergy(100);
+                speed -= 500 / DataHandler.kineticBarrierLevel;
+
+                if (random.nextInt(2) == 0) {
+                    spacecraft.setVelocityLeft((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
                     spacecraft.setVelocityRight(0);
                 } else {
                     spacecraft.setVelocityLeft(0);
-                    spacecraft.setVelocityRight(3);
+                    spacecraft.setVelocityRight((float) (5 / Math.sqrt(DataHandler.kineticBarrierLevel)));
                 }
 
                 AssetLoader.spacecraftHit2.play();
@@ -457,11 +513,11 @@ public class Updater {
 
     public void openCrate() {
 
-
-        if (crateQueue.poll() == 1) {
+        if (crateQueue.poll() == 1 && DataHandler.money >= 1000) {
             AssetLoader.woodenCrateBreak.play();
             generateLoot();
             gameState = GameState.ITEMSPLASH;
+            DataHandler.money -= 1000;
         }
     }
 
@@ -597,7 +653,7 @@ public class Updater {
         return itemAlpha;
     }
 
-    public int getRandomMeme(){
+    public int getRandomMeme() {
         return randomMeme;
     }
 

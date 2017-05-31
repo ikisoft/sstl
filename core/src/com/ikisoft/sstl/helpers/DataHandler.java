@@ -45,23 +45,25 @@ public class DataHandler {
         if(speedLevel < 1){
             speedLevel = 1;
         }
-        speedLevel = 1;
+        //speedLevel = 1;
         controlLevel = prefs.getInteger("control_level");
         if(controlLevel < 1){
             controlLevel = 1;
         }
-        controlLevel = 5;
+        //controlLevel = 5;
         kineticBarrierLevel = prefs.getInteger("barrier_level");
         if(kineticBarrierLevel < 1){
             kineticBarrierLevel = 1;
         }
+        //kineticBarrierLevel = 10;
         shieldLevel = prefs.getInteger("shield_level");
         if(shieldLevel < 1){
             shieldLevel = 1;
         }
+        //shieldLevel = 1;
 
         vehicleCondition = prefs.getInteger("vehicle_condition");
-        vehicleCondition = 100;
+        //vehicleCondition = 100;
 
         crateCollected = false;
     }
@@ -72,8 +74,12 @@ public class DataHandler {
         prefs.putInteger("scrap", scrap);
         prefs.putInteger("rod", rod);
         prefs.putInteger("core", core);
-        prefs.putInteger("health", healthLevel);
-        prefs.putInteger("speedlevel", speedLevel);
+        prefs.putInteger("health_level", healthLevel);
+        prefs.putInteger("speed_level", speedLevel);
+        prefs.putInteger("barrier_level", kineticBarrierLevel);
+        prefs.putInteger("shield_level", shieldLevel);
+        prefs.putInteger("vehicle_condition", vehicleCondition);
+
 
         prefs.putBoolean("soundMuted", soundMuted);
         prefs.putBoolean("musicMuted", musicMuted);

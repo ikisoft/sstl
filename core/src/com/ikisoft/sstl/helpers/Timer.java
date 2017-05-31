@@ -33,6 +33,20 @@ public class Timer {
         return false;
     }
 
+    public boolean doSomethingFor(long x){
+
+        if (!timerStarted) {
+            nanoSeconds = x * 1000000000L;
+            startTime = TimeUtils.nanoTime();
+            timerStarted = true;
+        }
+        if (TimeUtils.timeSinceNanos(startTime) > nanoSeconds) {
+            return false;
+        }
+        return true;
+
+    }
+
     public boolean doSomethingEvery(long x) {
 
         if (!timerStarted) {

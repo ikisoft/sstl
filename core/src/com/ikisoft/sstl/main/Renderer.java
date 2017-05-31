@@ -98,8 +98,12 @@ public class Renderer {
                 renderPaused();
                 break;
             case GAMEOVER:
+
+
+                timer.resetTime();
                 particlePosY = 0;
                 renderRunning(runTime);
+
                 break;
             case GAMEOVERSCREEN:
                 renderGameover(runTime);
@@ -229,6 +233,10 @@ public class Renderer {
         drawSpeed();
         drawEnergyShieldMeter();
 
+  /*      if(updater.getGameState() == Updater.GameState.GAMEOVER){
+            drawTint();
+        }
+*/
         if (spacecraft.getHealth() < 2) {
 
             if (timer.toggleSomethingEvery(1)) {
@@ -236,6 +244,7 @@ public class Renderer {
             }
         }
         drawEngineFailure();
+        drawShieldFailure();
 
         if (updater.getDevEnabled()) {
             AssetLoader.font.draw(batch, "Distance: " + updater.getDistance(), 50, 1800);
@@ -291,6 +300,7 @@ public class Renderer {
                 updater.getAnchorPos().y - 850);
         AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
+        AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
         glyphLayout.setText(AssetLoader.fontMedium, "1000$");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
@@ -300,6 +310,7 @@ public class Renderer {
         glyphWidth = glyphLayout.width;
         AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getAnchorPos().y - 1100);
+        AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         glyphLayout.setText(AssetLoader.font, StringConstants.crateSplashContinue);
         glyphWidth = glyphLayout.width;
@@ -325,6 +336,32 @@ public class Renderer {
         AssetLoader.selectLootTexture(updater.getCrateDrop().get(0),
                 updater.getCrateDrop().get(1),
                 updater.getCrateDrop().get(2));
+
+
+        batch.draw(AssetLoader.dropGlowTexture1,
+                412 - updater.getItemAlpha() * 300,
+                800,
+                128, 128, 256, 256,
+                1 * updater.getItemAlpha(),
+                1 * updater.getItemAlpha(),
+                rotation, true);
+
+        batch.draw(AssetLoader.dropGlowTexture2,
+                412,
+                900,
+                128, 128, 256, 256,
+                1 * updater.getItemAlpha(),
+                1 * updater.getItemAlpha(),
+                rotation2, true);
+
+        batch.draw(AssetLoader.dropGlowTexture3,
+                412 + updater.getItemAlpha() * 300,
+                800,
+                128, 128, 256, 256,
+                1 * updater.getItemAlpha(),
+                1 * updater.getItemAlpha(),
+                rotation, true);
+
 
         batch.draw(AssetLoader.lootTexture1,
                 412 - updater.getItemAlpha() * 300,
@@ -368,8 +405,16 @@ public class Renderer {
                 2 - updater.getItemAlpha() * 2,
                 2 - updater.getItemAlpha() * 2, rotation, true
         );
+
         batch.setColor(1, 1, 1, 1);
 
+        AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
+        glyphLayout.setText(AssetLoader.fontMedium, AssetLoader.lootText1 + "\n" + AssetLoader.lootText2
+                + "\n" + AssetLoader.lootText3);
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 900);
+        AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         glyphLayout.setText(AssetLoader.font, "Continue");
         glyphWidth = glyphLayout.width;
@@ -390,11 +435,15 @@ public class Renderer {
 
         drawUI();
 
+        AssetLoader.fontSmallish.setColor(1, 0.831f, 0, 1f);
+
         glyphLayout.setText(AssetLoader.fontSmallish,
                 StringConstants.randomMemes.get(updater.getRandomMeme()));
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmallish.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getAnchorPos().y);
+
+        AssetLoader.fontSmallish.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         glyphLayout.setText(AssetLoader.fontSmall, DataHandler.money + "$");
         glyphWidth = glyphLayout.width;
@@ -491,12 +540,12 @@ public class Renderer {
                     updater.getAnchorPos().y);
         }
 
-
+        AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
         glyphLayout.setText(AssetLoader.font, "BACK");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getAnchorPos().y - 1200);
-
+        AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         //ARMOR
 
@@ -526,18 +575,34 @@ public class Renderer {
                 batch.draw(AssetLoader.health, i + 220, 1000, 64, 64);
             }
 
-            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+
+            if(UpgradeHandler.canUpgradeArmor()){
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.3f, 0.3f, 1);
+            }
             glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 800);
             AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "- 609$\n" +
-                    "- 20 scrap");
+
+            AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
+            glyphLayout.setText(AssetLoader.fontMedium, "+ 1 armor");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
                     updater.getAnchorPos().y - 900);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+
+            AssetLoader.fontMedium.setColor(1, 0.3f, 0.3f, 1);
+            glyphLayout.setText(AssetLoader.fontMedium, "- "
+                    + (int) (Math.sqrt(DataHandler.healthLevel) * 1000) + "$\n- "
+                    + DataHandler.healthLevel * 10 + " scrap");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
+                    updater.getAnchorPos().y - 950);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
 
 
         }
@@ -572,18 +637,33 @@ public class Renderer {
                 batch.draw(AssetLoader.health, i + 220, 1000, 64, 64);
             }
 
-            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            if(UpgradeHandler.canUpgradeThruster()){
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.3f, 0.3f, 1);
+            }
             glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 800);
             AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "- 609$\n" +
-                    "- 20 scrap");
+            AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
+            glyphLayout.setText(AssetLoader.fontMedium, "+ 1 thrusters");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
                     updater.getAnchorPos().y - 900);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+
+            AssetLoader.fontMedium.setColor(1, 0.3f, 0.3f, 1);
+            glyphLayout.setText(AssetLoader.fontMedium, "- "
+                    + (int) (Math.sqrt(DataHandler.speedLevel) * 1000) + "$\n- "
+                    + DataHandler.speedLevel * 5 + " scrap" + "\n- " +
+            DataHandler.speedLevel + " glowing rod");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
+                    updater.getAnchorPos().y - 950);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         }
 
@@ -617,18 +697,33 @@ public class Renderer {
                 batch.draw(AssetLoader.health, i + 220, 1000, 64, 64);
             }
 
-            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-            glyphLayout.setText(AssetLoader.font, "UPGRADE");
+            if(UpgradeHandler.canUpgradeKinetic()){
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.3f, 0.3f, 1);
+            }            glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 800);
             AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "- 609$\n" +
-                    "- 20 scrap");
+            AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
+            glyphLayout.setText(AssetLoader.fontMedium, "+ 1 kinetic barrier");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
                     updater.getAnchorPos().y - 900);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+
+
+            AssetLoader.fontMedium.setColor(1, 0.3f, 0.3f, 1);
+            glyphLayout.setText(AssetLoader.fontMedium, "- "
+                    + (int) (Math.sqrt(DataHandler.kineticBarrierLevel) * 1000) + "$\n- "
+                    + DataHandler.kineticBarrierLevel * 2 + " scrap" +
+            "\n- " + DataHandler.kineticBarrierLevel * 2 + " glowing rod");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
+                    updater.getAnchorPos().y - 950);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         }
 
@@ -663,18 +758,38 @@ public class Renderer {
             }
 
 
-            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+
+
+            if(UpgradeHandler.canUpgradeEnergyShield()){
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.3f, 0.3f, 1);
+            }
+
             glyphLayout.setText(AssetLoader.font, "UPGRADE");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 800);
             AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "- 609$\n" +
-                    "- 20 scrap");
+            AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
+            glyphLayout.setText(AssetLoader.fontMedium, "+ 1 shields");
             glyphWidth = glyphLayout.width;
-            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
                     updater.getAnchorPos().y - 900);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+
+            AssetLoader.fontMedium.setColor(1, 0.3f, 0.3f, 1);
+            glyphLayout.setText(AssetLoader.fontMedium, "- "
+                    + (int) (Math.sqrt(DataHandler.shieldLevel) * 1200) + "$\n- "
+                    + DataHandler.shieldLevel * 3 + " glowing rod" +
+                    "\n- " + DataHandler.shieldLevel + " radioactive core");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.fontMedium.draw(batch, glyphLayout, 280,
+                    updater.getAnchorPos().y - 950);
+            AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+
+
 
 
         }
@@ -1011,6 +1126,7 @@ public class Renderer {
         batch.draw(AssetLoader.rodIcon, 628 - 25, updater.getAnchorPos().y + 149, 64, 64);
         batch.draw(AssetLoader.coreIcon, 862 - 25, updater.getAnchorPos().y + 149, 64, 64);
 
+        AssetLoader.fontSmallish.setColor(1, 0.831f, 0, 1f);
         glyphLayout.setText(AssetLoader.fontSmallish, DataHandler.money + "$");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmallish.draw(batch, glyphLayout, 128 + 50, updater.getAnchorPos().y + 190);
@@ -1021,12 +1137,24 @@ public class Renderer {
 
         glyphLayout.setText(AssetLoader.fontSmallish, DataHandler.rod + "");
         glyphWidth = glyphLayout.width;
-        AssetLoader.fontSmallish.draw(batch, glyphLayout, 722 - 25, updater.getAnchorPos().y + 190);
+        AssetLoader.fontSmallish.draw(batch, glyphLayout, 705 - 25, updater.getAnchorPos().y + 190);
 
         glyphLayout.setText(AssetLoader.fontSmallish, DataHandler.core + "");
         glyphWidth = glyphLayout.width;
-        AssetLoader.fontSmallish.draw(batch, glyphLayout, 962 - 25, updater.getAnchorPos().y + 190);
+        AssetLoader.fontSmallish.draw(batch, glyphLayout, 945 - 25, updater.getAnchorPos().y + 190);
+        AssetLoader.fontSmallish.setColor(0.141f, 0.848f, 0.407f, 1f);
 
+    }
+
+    private void drawTint(){
+
+        for (int i = 1; i < 1080; i += 256) {
+            for (int j = 1; j < 2176; j += 256) {
+
+                batch.draw(AssetLoader.tint, i, j);
+
+            }
+        }
     }
 
     private void drawBackground() {
@@ -1096,12 +1224,17 @@ public class Renderer {
                 //spacecraft.getHitbox().height
         );
 
-        if(DataHandler.shieldLevel > 0){
+        if (DataHandler.shieldLevel > 0 && !updater.getSpacecraft().getEnergyDestroyed()) {
             batch.draw(AssetLoader.barrierTexture, spacecraft.getPosition().x - 80,
                     spacecraft.getPosition().y - 100, 300, 300);
         }
 
-
+        if (DataHandler.kineticBarrierLevel > 0 && updater.getSpacecraft().getHit()) {
+            batch.setColor(1, 1, 1, random.nextFloat());
+            batch.draw(AssetLoader.kineticTexture, spacecraft.getPosition().x - 65,
+                    spacecraft.getPosition().y - 50);
+            batch.setColor(1, 1, 1, 1);
+        }
         if (updater.getDevEnabled()) {
 
             shapeRenderer.rect(
@@ -1179,7 +1312,7 @@ public class Renderer {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             shapeRenderer.setColor(0, 0.749f, 1, 1f - ((float) particlePosY / 250));
             shapeRenderer.rect(spacecraft.getPosition().x + 90 - particlePosX,
-                    spacecraft.getPosition().y - particlePosY + 50,
+                    spacecraft.getPosition().y - particlePosY - 25,
                     16, 16);
 
             shapeRenderer.rect(spacecraft.getPosition().x + 90 - particlePosX,
@@ -1572,6 +1705,21 @@ public class Renderer {
         }
     }
 
+    private void drawShieldFailure() {
+        if (updater.getSpacecraft().getEnergyDestroyed()) {
+            if (timer.doSomethingFor(2)) {
+                AssetLoader.font.setColor(1, 0.3f, 0.3f, 1);
+                glyphLayout.setText(AssetLoader.font, "SHIELDS DOWN");
+                glyphWidth = glyphLayout.width;
+                glyphHeight = glyphLayout.height;
+                AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                        ((VIRTUAL_HEIGHT - glyphHeight) / 2) + 60);
+                AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
+            }
+        }
+
+    }
+
     private void drawSpeed() {
 
         batch.setColor(1, 1, 1, 1);
@@ -1597,10 +1745,21 @@ public class Renderer {
 
     }
 
-    private void drawEnergyShieldMeter(){
+    private void drawEnergyShieldMeter() {
 
-        batch.setColor(1, 1, 1, 1);
+
+        if (updater.getSpacecraft().getEnergy() < 33 && !spacecraft.getEnergyDestroyed()){
+            batch.setColor(1, 0.5f, 0.5f, 1);
+        } else if (spacecraft.getEnergyDestroyed()){
+            batch.setColor(1, 0, 0, 1);
+        } else {
+            batch.setColor(1, 1, 1, 1);
+        }
+
+
+
         batch.draw(AssetLoader.speedFrameLeft, 220, 64, 64, hudHeight);
+
 
         for (int i = 286; i < 796 - 1; i += 64) {
             batch.draw(AssetLoader.speedFrameMiddle, i - 2, 64, 64, hudHeight);
@@ -1609,7 +1768,7 @@ public class Renderer {
         batch.draw(AssetLoader.speedFrameRight, 796, 64, 64, hudHeight);
 
 
-        for (int i = 0; i < updater.getSpacecraft().getEnergy() * 0.008; i++) {
+        for (int i = 0; i < updater.getSpacecraft().getEnergy() * 0.8; i++) {
 
             batch.draw(AssetLoader.speed, 226 + i * 8, 64, 64, hudHeight);
         }
@@ -1619,7 +1778,7 @@ public class Renderer {
         //AssetLoader.fontSmall.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, 270);
         AssetLoader.fontSmall.draw(batch, glyphLayout, 90, 88);
         //AssetLoader.fontSmall.setColor(0.141f, 0.848f, 0.407f, 1f);
-
+        batch.setColor(1, 1, 1, 1);
     }
 
     private void drawHealth() {
@@ -1651,9 +1810,9 @@ public class Renderer {
             batch.draw(AssetLoader.health, i + 220, 32, 64, hudHeight);
         }
 
+        glyphLayout.setText(AssetLoader.fontSmall, "HULL");
         batch.setColor(1, 1, 1, 1);
 
-        glyphLayout.setText(AssetLoader.fontSmall, "HULL");
         glyphWidth = glyphLayout.width;
         //AssetLoader.fontSmall.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2, 160);
         AssetLoader.fontSmall.draw(batch, glyphLayout, 90, 56);
