@@ -20,7 +20,12 @@ public class DataHandler {
     public static int scrap;
     public static int core;
     public static int rod;
+    public static int epicArmor;
+    public static int epicThruster;
+    public static int epicKinetic;
+    public static int epicEnergy;
     public static int upgradeSelected;
+    public static int itemSelected;
     public static int shopHelper;
     public static boolean crateCollected;
 
@@ -29,11 +34,22 @@ public class DataHandler {
     public static void load(){
 
         upgradeSelected = 0;
+        itemSelected = 0;
         prefs = Gdx.app.getPreferences("SSTL_prefs");
         money = prefs.getInteger("money");
+        money = 10000000;
         scrap = prefs.getInteger("scrap");
         rod = prefs.getInteger("rod");
         core = prefs.getInteger("core");
+        epicArmor = prefs.getInteger("epic_armor");
+        epicThruster = prefs.getInteger("epic_thruster");
+        epicKinetic = prefs.getInteger("epic_kinetic");
+        epicEnergy = prefs.getInteger("epic_energy");
+
+        epicArmor = 0;
+        epicThruster = 0;
+        epicKinetic = 0;
+        epicEnergy = 0;
         //highscore = prefs.getInteger("highscore");
 
         healthLevel = prefs.getInteger("health_level");
@@ -45,7 +61,7 @@ public class DataHandler {
         if(speedLevel < 1){
             speedLevel = 1;
         }
-        //speedLevel = 1;
+        speedLevel = 5;
         controlLevel = prefs.getInteger("control_level");
         if(controlLevel < 1){
             controlLevel = 1;
@@ -63,7 +79,7 @@ public class DataHandler {
         //shieldLevel = 1;
 
         vehicleCondition = prefs.getInteger("vehicle_condition");
-        //vehicleCondition = 100;
+        vehicleCondition = 100;
 
         crateCollected = false;
     }

@@ -39,7 +39,8 @@ public class AssetLoader {
             dropGlowPurple, dropGlowTexture1, dropGlowTexture2, dropGlowTexture3,
             speedUp1, kineticShield, barrier, armorUp2, armorUp3,
             soundMuted, musicMuted, moneyIcon, scrapIcon, coreIcon, rodIcon,
-            tint, radioactiveWaste, bigSteelCrate, steelCrate;
+            tint, radioactiveWaste, bigSteelCrate, steelCrate, epicArmor, epicThruster, epicKinetic,
+            epicEnergy;
 
     public static Sprite
             cow, fish, can, healthBarFrame, healthBar, coinSprite,
@@ -52,7 +53,7 @@ public class AssetLoader {
     public static Sound
             click, click2, click3, click4, thruster1, thruster2, spaceFoley,
             spacecraftHit, spacecraftHit2, spacecraftHit3, spacecraftHit4, spacecraftHit5,
-            explosion, cashSound, moo, woodenCrateBreak, shieldBreak, upgrade;
+            explosion, cashSound, moo, woodenCrateBreak, shieldBreak, upgrade, grab;
 
     public static String lootText1, lootText2, lootText3;
 
@@ -99,6 +100,10 @@ public class AssetLoader {
         bigWoodenCrate = new TextureRegion(texture, 0, 3584, 512, 512);
         core = new TextureRegion(texture, 0, 3328, 256, 256);
         rod = new TextureRegion(texture, 256, 3328, 256, 256);
+        epicArmor = new TextureRegion(texture, 512, 3328, 256, 256);
+        epicKinetic = new TextureRegion(texture, 768, 3328, 256, 256);
+        epicEnergy = new TextureRegion(texture, 1024, 3328, 256, 256);
+        epicThruster = new TextureRegion(texture, 1280, 3328, 256, 256);
 
         healthFrame = new TextureRegion(texture, 0, 1024, 256, 256);
         health = new TextureRegion(texture, 256, 1024, 256, 256);
@@ -159,7 +164,7 @@ public class AssetLoader {
         dropGlowPurple = new TextureRegion(texture, 512, 2560, 256, 256);
         radioactiveWaste = new TextureRegion(texture, 768, 256, 256, 256);
         steelCrate = new TextureRegion(texture, 3840, 768, 256, 256);
-        bigSteelCrate = new TextureRegion(texture, 512, 3584, 256, 256);
+        bigSteelCrate = new TextureRegion(texture, 512, 3584, 512, 512);
         afterburner = new TextureRegion(texture, 3840, 0, 256, 256);
         speedLine = new TextureRegion(texture, 3840, 256, 256, 256);
 
@@ -169,6 +174,10 @@ public class AssetLoader {
         lootColorArray.add(dropGlowGreen);
         lootColorArray.add(dropGlowBlue);
         lootColorArray.add(dropGlowPurple);
+        lootColorArray.add(dropGlowPurple);
+        lootColorArray.add(dropGlowPurple);
+        lootColorArray.add(dropGlowPurple);
+        lootColorArray.add(dropGlowPurple);
 
         lootArray = new Array<TextureRegion>(16);
         lootArray.add(cashstack); //green
@@ -176,6 +185,10 @@ public class AssetLoader {
         lootArray.add(scrap); //green
         lootArray.add(rod); //blue
         lootArray.add(core); //purple
+        lootArray.add(epicArmor); //purple
+        lootArray.add(epicThruster); //purple
+        lootArray.add(epicKinetic); //purple
+        lootArray.add(epicEnergy); //purple
 
         lootStringArray = new Array<String>(16);
         lootStringArray.add("- 100$");
@@ -183,6 +196,10 @@ public class AssetLoader {
         lootStringArray.add("- metal scrap");
         lootStringArray.add("- radioactive substance");
         lootStringArray.add("- Radioactive core");
+        lootStringArray.add("- Ikium armor plating");
+        lootStringArray.add("- Turbo Charger");
+        lootStringArray.add("- Red Matter");
+        lootStringArray.add("- Nuclear Battery");
 
         font = new BitmapFont(Gdx.files.internal("fonts/font2.fnt"));
         font.getData().setScale(2f, 2f);
@@ -224,6 +241,7 @@ public class AssetLoader {
         thruster2 = Gdx.audio.newSound(Gdx.files.internal("sounds/thruster2.wav"));
         shieldBreak = Gdx.audio.newSound(Gdx.files.internal("sounds/shieldbreak_warning.wav"));
         upgrade = Gdx.audio.newSound(Gdx.files.internal("sounds/upgradesound.wav"));
+        grab = Gdx.audio.newSound(Gdx.files.internal("sounds/grab.wav"));
 
 
     }

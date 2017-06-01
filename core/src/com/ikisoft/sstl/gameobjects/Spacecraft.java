@@ -33,7 +33,7 @@ public class Spacecraft {
         movingLeft = false;
         movingRight = false;
         energyDestroyed = false;
-        thrustPower = (float) DataHandler.speedLevel / 10;
+        thrustPower = 0.1f * (DataHandler.speedLevel / 5);
         health = DataHandler.healthLevel;
         velocityLeft = 0;
         velocityRight = 0;
@@ -46,21 +46,26 @@ public class Spacecraft {
     public void update(float delta) {
 
 
-        if(!energyDestroyed)energy += 0.05;
-        if(energy >= 100)energy = 100;
+        if (!energyDestroyed) energy += 0.05;
+        if (energy >= 100) energy = 100;
 
         velocityLeft -= 0.01;
         velocityRight -= 0.01;
-        if(velocityLeft < 0)velocityLeft = 0;
-        if(velocityRight < 0)velocityRight = 0;
+
+        if (velocityLeft < 0) velocityLeft = 0;
+        if (velocityRight < 0) velocityRight = 0;
+        if (velocityLeft > DataHandler.speedLevel) velocityLeft = DataHandler.speedLevel;
+        if (velocityRight > DataHandler.speedLevel) velocityRight = DataHandler.speedLevel;
+
         position.x -= velocityLeft * 5;
         position.x += velocityRight * 5;
 
-        if(movingLeft && health != 0){
+
+        if (movingLeft && health != 0) {
 
             //No way around this because of android audio playback and libgdx shittiness
             //must use gdx.sound instead of music...
-            if(!soundPlayed){
+            if (!soundPlayed) {
                 long id = AssetLoader.thruster1.play();
                 AssetLoader.thruster1.setLooping(id, true);
                 soundPlayed = true;
@@ -72,10 +77,10 @@ public class Spacecraft {
             velocityRight -= thrustPower;
         }
 
-        if(movingRight && health != 0){
+        if (movingRight && health != 0) {
             //No way around this because of android audio playback and libgdx shittiness
             //must use gdx.sound instead of music...
-            if(!soundPlayed){
+            if (!soundPlayed) {
                 long id = AssetLoader.thruster1.play();
                 AssetLoader.thruster1.setLooping(id, true);
                 soundPlayed = true;
@@ -88,12 +93,12 @@ public class Spacecraft {
         }
 
         //position
-        if (position.x <= 0){
+        if (position.x <= 0) {
             position.x = 0;
             velocityLeft = 0;
             velocityRight = 1.5f;
         }
-        if (position.x >= 1080 - hitbox.width){
+        if (position.x >= 1080 - hitbox.width) {
             position.x = 1080 - hitbox.width;
             velocityRight = 0;
             velocityLeft = 1.5f;
@@ -111,7 +116,7 @@ public class Spacecraft {
         hitbox.y = position.y;
         movingLeft = false;
         movingRight = false;
-        thrustPower = (float) DataHandler.speedLevel / 10;
+        thrustPower = 0.1f * (DataHandler.speedLevel / 5);
         health = DataHandler.healthLevel;
         velocityLeft = 0;
         velocityRight = 0;
@@ -169,13 +174,14 @@ public class Spacecraft {
         return movingRight;
     }
 
-    public void setVelocityLeft(float velocityLeft){
+    public void setVelocityLeft(float velocityLeft) {
         this.velocityLeft = velocityLeft;
     }
 
-    public void setVelocityRight(float velocityRight){
+    public void setVelocityRight(float velocityRight) {
         this.velocityRight = velocityRight;
     }
+
     public int getHealth() {
         return health;
     }
@@ -185,29 +191,29 @@ public class Spacecraft {
         System.out.println(health);
     }
 
-    public int getEnergy(){
+    public int getEnergy() {
         return (int) energy;
     }
 
-    public void setEnergy(float x){
+    public void setEnergy(float x) {
 
         energy -= x / DataHandler.shieldLevel;
-        if(energy < 0 && !energyDestroyed){
+        if (energy < 0 && !energyDestroyed) {
             energyDestroyed = true;
             AssetLoader.shieldBreak.play(0.5f);
         }
 
     }
 
-    public boolean getEnergyDestroyed(){
+    public boolean getEnergyDestroyed() {
         return energyDestroyed;
     }
 
-    public boolean getHit(){
+    public boolean getHit() {
         return hit;
     }
 
-    public void setHit(boolean x){
+    public void setHit(boolean x) {
 
         hit = x;
     }

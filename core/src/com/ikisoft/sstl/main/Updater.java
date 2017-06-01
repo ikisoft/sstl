@@ -57,7 +57,7 @@ public class Updater {
 
         START, MAINMENU, RUNNING, PAUSED, GAMEOVER,
         GAMEOVERSCREEN, OPTIONS, SHIP, ITEMS, SYSTEMS, REPAIR, STATS, INFO,
-        CRATESPLASH, ITEMSPLASH;
+        CRATESPLASH, CRATECHOOSE, ITEMSPLASH, DESTROYED;
     }
 
     public Updater() {
@@ -80,8 +80,8 @@ public class Updater {
         coin = new Money(40, 40, this, 10, 2050);
         cashstack = new Money(100, 100, this, 50, 5000);
         //frequency 50k
-        woodenCrate = new Crate(256, 256, this, 50000);
-        steelCrate = new Crate(256, 256, this, 150000);
+        woodenCrate = new Crate(256, 256, this, 2500);
+        steelCrate = new Crate(256, 256, this, 2500);
         anchor = new LerpHandler(200, 3000, 200, 1536);
         crateSplash = new LerpHandler(1000, 800, 300, 800);
         distance = 0;
@@ -154,7 +154,10 @@ public class Updater {
                 }
 
                 if (timer.waitFor(5)) {
-                    if (!crateQueue.isEmpty()) {
+
+                    if(DataHandler.vehicleCondition <= 0){
+                        gameState = GameState.DESTROYED;
+                    } else if (!crateQueue.isEmpty()) {
                         gameState = GameState.CRATESPLASH;
                     } else {
                         gameState = GameState.GAMEOVERSCREEN;
@@ -194,6 +197,9 @@ public class Updater {
                 elapsed += Gdx.graphics.getDeltaTime();
                 progress = Math.min(1f, elapsed / lifeTime);
                 itemAlpha = easAlpha.apply(progress);
+                break;
+            case DESTROYED:
+                break;
             default:
                 break;
         }
@@ -267,6 +273,7 @@ public class Updater {
 
         coin.update(delta);
         woodenCrate.update(delta);
+        steelCrate.update(delta);
         spacecraft.update(delta);
         spacejunk.update(delta);
         spacejunk2.update(delta);
@@ -505,47 +512,137 @@ public class Updater {
 
             if (!woodenCrate.getCollected()) {
                 woodenCrate.setCollected();
-                AssetLoader.cashSound.play();
+                AssetLoader.grab.play();
                 crateQueue.add(1);
+            }
+        }
+
+        if (Intersector.overlaps(spacecraft.getHitbox(), steelCrate.getHitbox())) {
+
+            if (!steelCrate.getCollected()) {
+                steelCrate.setCollected();
+                AssetLoader.grab.play();
+                crateQueue.add(2);
             }
         }
     }
 
     public void openCrate() {
 
-        if (crateQueue.poll() == 1 && DataHandler.money >= 1000) {
+        if (crateQueue.peek() == 1 && DataHandler.money >= 1000) {
+            crateQueue.poll();
             AssetLoader.woodenCrateBreak.play();
-            generateLoot();
+            generateLoot(1);
             gameState = GameState.ITEMSPLASH;
             DataHandler.money -= 1000;
+        } else if (crateQueue.peek() == 2 && DataHandler.money >= 2500) {
+            crateQueue.poll();
+            AssetLoader.woodenCrateBreak.play();
+            generateLoot(2);
+            gameState = GameState.ITEMSPLASH;
+            DataHandler.money -= 2500;
+        } else {
+            System.out.println("NO MONEY NIGGA");
+            crateQueue.poll();
+            if(!crateQueue.isEmpty()){
+                crateSplash.reset(2000, 800);
+                gameState = GameState.CRATESPLASH;
+            } else {
+                gameState = GameState.GAMEOVERSCREEN;
+            }
         }
     }
 
-    private void generateLoot() {
-
-        for (int i = 0; i < 3; i++) {
-            lootNumber = random.nextInt(100);
-
-            if (lootNumber >= 95 && lootNumber <= 100) {
-                crateDrop.add(i, 4);
-            } else if (lootNumber >= 85 && lootNumber < 95) {
-                crateDrop.add(i, 3);
-            } else {
-                crateDrop.add(i, random.nextInt(3));
-            }
+    public void nextCrate(){
+        crateQueue.poll();
+        if(!crateQueue.isEmpty()){
+            crateSplash.reset(2000, 800);
+            gameState = GameState.CRATESPLASH;
+        } else {
+            gameState = GameState.GAMEOVERSCREEN;
         }
+    }
 
-        for (int i = 0; i < 3; i++) {
-            if (crateDrop.get(i) == 4) {
-                DataHandler.core++;
-            } else if (crateDrop.get(i) == 3) {
-                DataHandler.rod++;
-            } else if (crateDrop.get(i) == 2) {
-                DataHandler.scrap++;
-            } else if (crateDrop.get(i) == 1) {
-                DataHandler.money += 200;
-            } else if (crateDrop.get(i) == 0) {
-                DataHandler.money += 100;
+    //Forgive me, old gods of clean code... :(
+    private void generateLoot(int crateType) {
+
+        //Wooden crate loot
+        if(crateType == 1){
+
+            for (int i = 0; i < 3; i++) {
+                lootNumber = random.nextInt(100);
+
+                if (lootNumber >= 97 && lootNumber <= 99) {
+                    crateDrop.add(i, random.nextInt(8 - 5) + 5);
+                }else if (lootNumber >= 93 && lootNumber < 97) {
+                    crateDrop.add(i, 4);
+                } else if (lootNumber >= 50 && lootNumber < 93) {
+                    crateDrop.add(i, 3);
+                } else {
+                    crateDrop.add(i, random.nextInt(3));
+                }
+            }
+
+            for (int i = 0; i < 3; i++) {
+                if (crateDrop.get(i) == 8) {
+                    DataHandler.epicArmor++;
+                } else if (crateDrop.get(i) == 7) {
+                    DataHandler.epicThruster++;
+                } else if (crateDrop.get(i) == 6) {
+                    DataHandler.epicKinetic++;
+                } else if (crateDrop.get(i) == 5) {
+                    DataHandler.epicEnergy++;
+                } else if (crateDrop.get(i) == 4) {
+                    DataHandler.core++;
+                } else if (crateDrop.get(i) == 3) {
+                    DataHandler.rod++;
+                } else if (crateDrop.get(i) == 2) {
+                    DataHandler.scrap++;
+                } else if (crateDrop.get(i) == 1) {
+                    DataHandler.money += 200;
+                } else if (crateDrop.get(i) == 0) {
+                    DataHandler.money += 100;
+                }
+            }
+            //Steel crate loot
+        } else if(crateType == 2){
+
+            for (int i = 0; i < 3; i++) {
+                lootNumber = random.nextInt(100);
+
+                if (lootNumber >= 94 && lootNumber <= 99) {
+                    crateDrop.add(i, 8);
+                }else if (lootNumber >= 89 && lootNumber < 94) {
+                    crateDrop.add(i, 7);
+                } else if (lootNumber >= 84 && lootNumber < 89) {
+                    crateDrop.add(i, 6);
+                } else if (lootNumber >= 74 && lootNumber < 79) {
+                    crateDrop.add(i, 5);
+                } else {
+                    crateDrop.add(i, random.nextInt(5));
+                }
+            }
+
+            for (int i = 0; i < 3; i++) {
+                if (crateDrop.get(i) == 8) {
+                    DataHandler.epicEnergy++;
+                } else if (crateDrop.get(i) == 7) {
+                    DataHandler.epicKinetic++;
+                } else if (crateDrop.get(i) == 6) {
+                    DataHandler.epicThruster++;
+                } else if (crateDrop.get(i) == 5) {
+                    DataHandler.epicArmor++;
+                } else if (crateDrop.get(i) == 4) {
+                    DataHandler.core++;
+                } else if (crateDrop.get(i) == 3) {
+                    DataHandler.rod++;
+                } else if (crateDrop.get(i) == 2) {
+                    DataHandler.scrap++;
+                } else if (crateDrop.get(i) == 1) {
+                    DataHandler.money += 200;
+                } else if (crateDrop.get(i) == 0) {
+                    DataHandler.money += 100;
+                }
             }
         }
     }
@@ -589,6 +686,10 @@ public class Updater {
 
     public Crate getWoodenCrate() {
         return woodenCrate;
+    }
+
+    public Crate getSteelCrate() {
+        return steelCrate;
     }
 
     public GameState getGameState() {
@@ -637,7 +738,7 @@ public class Updater {
         return moneyThisRun;
     }
 
-    public Queue<Integer> getCrateQueue() {
+    public Queue<Integer> getCrateQueue() throws NullPointerException {
         return crateQueue;
     }
 

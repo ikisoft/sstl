@@ -1,6 +1,7 @@
 package com.ikisoft.sstl.main;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -132,12 +133,20 @@ public class Renderer {
             case CRATESPLASH:
                 renderCratesplash();
                 break;
+            case CRATECHOOSE:
+                renderCratechoose();
+                break;
             case ITEMSPLASH:
                 renderItemsplash();
+                break;
+            case DESTROYED:
+
+                break;
             default:
                 break;
         }
     }
+
 
     private void renderStart(float runTime) {
 
@@ -265,6 +274,13 @@ public class Renderer {
 
         drawUI();
 
+        glyphLayout.setText(AssetLoader.font, "YOU FOUND A CRATE");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y);
+
+
+        //CRATES
         if (updater.getCrateQueue().peek() == 1) {
 
             batch.draw(AssetLoader.bigWoodenCrate,
@@ -280,20 +296,41 @@ public class Renderer {
                     256,
                     256, 2, 2, rotation, true
             );
+
             batch.setColor(1, 1, 1, 1);
+
+  /*          if (DataHandler.money >= 1000) {
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
+            }*/
+
+        } else if (updater.getCrateQueue().peek() == 2) {
+
+            batch.draw(AssetLoader.bigSteelCrate,
+                    updater.getCrateLerp().x,
+                    updater.getCrateLerp().y);
+
+            batch.setColor(0.918f, 1f, 0.996f, 0.75f);
+            batch.draw(AssetLoader.glowYellowSprite,
+                    updater.getCrateLerp().x,
+                    updater.getCrateLerp().y + 124,
+                    128,
+                    128,
+                    256,
+                    256, 2, 2, rotation, true
+            );
+
+            batch.setColor(1, 1, 1, 1);
+
+            /*if (DataHandler.money >= 2500) {
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
+            }*/
+
         }
-
-        glyphLayout.setText(AssetLoader.font, "YOU FOUND A CRATE");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getAnchorPos().y);
-
-        if (DataHandler.money >= 1000) {
-            AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-        } else {
-            AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
-        }
-
+        //TEXT
         glyphLayout.setText(AssetLoader.font, "OPEN");
         glyphWidth = glyphLayout.width;
         AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
@@ -301,16 +338,10 @@ public class Renderer {
         AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
-        glyphLayout.setText(AssetLoader.fontMedium, "1000$");
+        glyphLayout.setText(AssetLoader.fontMedium, "NEXT CRATE");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getAnchorPos().y - 1000);
-
-        glyphLayout.setText(AssetLoader.fontMedium, "FREE");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getAnchorPos().y - 1100);
-        AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
 
         glyphLayout.setText(AssetLoader.font, StringConstants.crateSplashContinue);
         glyphWidth = glyphLayout.width;
@@ -320,6 +351,116 @@ public class Renderer {
         batch.end();
 
     }
+
+    private void renderCratechoose() {
+
+        batch.begin();
+        batch.enableBlending();
+
+        drawUI();
+
+        glyphLayout.setText(AssetLoader.font, "YOU FOUND A CRATE");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y);
+
+
+        //CRATES
+        if (updater.getCrateQueue().peek() == 1) {
+
+            batch.draw(AssetLoader.bigWoodenCrate,
+                    updater.getCrateLerp().x,
+                    updater.getCrateLerp().y);
+
+            batch.setColor(0.918f, 1f, 0.996f, 0.75f);
+            batch.draw(AssetLoader.glowYellowSprite,
+                    updater.getCrateLerp().x,
+                    updater.getCrateLerp().y + 124,
+                    128,
+                    128,
+                    256,
+                    256, 2, 2, rotation, true
+            );
+
+            batch.setColor(1, 1, 1, 1);
+
+            if (DataHandler.money >= 1000) {
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
+            }
+
+        } else if (updater.getCrateQueue().peek() == 2) {
+
+            batch.draw(AssetLoader.bigSteelCrate,
+                    updater.getCrateLerp().x,
+                    updater.getCrateLerp().y);
+
+            batch.setColor(0.918f, 1f, 0.996f, 0.75f);
+            batch.draw(AssetLoader.glowYellowSprite,
+                    updater.getCrateLerp().x,
+                    updater.getCrateLerp().y + 124,
+                    128,
+                    128,
+                    256,
+                    256, 2, 2, rotation, true
+            );
+
+            batch.setColor(1, 1, 1, 1);
+
+            if (DataHandler.money >= 2500) {
+                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
+            } else {
+                AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
+            }
+
+        }
+        //TEXT
+        glyphLayout.setText(AssetLoader.font, "OPEN");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 850);
+        AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
+
+        glyphLayout.setText(AssetLoader.font, StringConstants.crateSplashContinue);
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 1300);
+
+        batch.end();
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(140, 900, 800, 400);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(0.141f, 0.848f, 0.407f, 1f);
+        shapeRenderer.rect(140, 900, 800, 400);
+        shapeRenderer.rect(141, 899, 799, 399);
+        shapeRenderer.rect(142, 898, 798, 398);
+        shapeRenderer.end();
+        batch.begin();
+        AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
+        glyphLayout.setText(AssetLoader.fontMedium, "WATCH A VIDEO - FREE");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 300);
+
+        glyphLayout.setText(AssetLoader.fontMedium, "OPEN WITH CASH - 609$");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 400);
+
+        AssetLoader.fontMedium.setColor(0.918f, 1f, 0.996f, 1);
+        glyphLayout.setText(AssetLoader.fontMedium, "BACK");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 550);
+        AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+        batch.end();
+
+    }
+
 
     private void renderItemsplash() {
 
@@ -807,8 +948,7 @@ public class Renderer {
 
         drawUI();
 
-        if (DataHandler.upgradeSelected == 0) {
-            batch.draw(AssetLoader.wireframeAnimation.getKeyFrame(runTime), 280, 600, 512, 512);
+        if (DataHandler.itemSelected == 0) {
             glyphLayout.setText(AssetLoader.font, "ITEMS");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
@@ -826,33 +966,38 @@ public class Renderer {
         //ITEM 1
 
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.itemTexture, 35, updater.getAnchorPos().y - 400);
+        batch.draw(AssetLoader.epicArmor, 35, updater.getAnchorPos().y - 400);
 
-        if (DataHandler.upgradeSelected == 1) {
+        if (DataHandler.itemSelected == 1) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.itemTexture, 35, updater.getAnchorPos().y - 400);
+            batch.draw(AssetLoader.epicArmor, 35, updater.getAnchorPos().y - 400);
 
-            glyphLayout.setText(AssetLoader.font, "???");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.font, "???");
+
+            } else {
+
+                glyphLayout.setText(AssetLoader.font, "Ikium armor plating");
+
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "item 2");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.fontMedium, "A Rare drop from loot boxes.");
+
+            } else {
+                glyphLayout.setText(AssetLoader.fontMedium, "Ikium armor plating gives a 10%\n" +
+                        "chance to neglate hull damage.");
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 500);
 
-            //healthframe and health are just used to render, no reference
-            for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
-            }
-            for (int i = 0; i < 640 * (DataHandler.healthLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
-            }
-
             AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-            glyphLayout.setText(AssetLoader.font, "UPGRADE");
+            glyphLayout.setText(AssetLoader.font, "SELL");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 900);
@@ -863,36 +1008,42 @@ public class Renderer {
 
         //ITEM 2
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.itemTexture, 280, updater.getAnchorPos().y - 400);
+        batch.draw(AssetLoader.epicThruster, 280, updater.getAnchorPos().y - 400);
         /*glyphLayout.setText(AssetLoader.fontSmall, "Upgrade\nthrusters");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmall.draw(batch, glyphLayout, 310,
                 updater.getAnchorPos().nanoSeconds - 830);*/
 
-        if (DataHandler.upgradeSelected == 2) {
+        if (DataHandler.itemSelected == 2) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.itemTexture, 280, updater.getAnchorPos().y - 400);
+            batch.draw(AssetLoader.epicThruster, 280, updater.getAnchorPos().y - 400);
 
-            glyphLayout.setText(AssetLoader.font, "???");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.font, "???");
+
+            } else {
+
+                glyphLayout.setText(AssetLoader.font, "Turbo Charger");
+
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "item 2");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.fontMedium, "A Rare drop from loot boxes.");
+
+            } else {
+                glyphLayout.setText(AssetLoader.fontMedium, "Turbo charger increases your\n" +
+                        "speed forward.");
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 500);
 
-            for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
-            }
-            for (int i = 0; i < 640 * (DataHandler.speedLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
-            }
-
             AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-            glyphLayout.setText(AssetLoader.font, "UPGRADE");
+            glyphLayout.setText(AssetLoader.font, "SELL");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 900);
@@ -902,36 +1053,42 @@ public class Renderer {
 
         //ITEM 3
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.itemTexture, 545, updater.getAnchorPos().y - 400);
+        batch.draw(AssetLoader.epicKinetic, 545, updater.getAnchorPos().y - 400);
         /*glyphLayout.setText(AssetLoader.fontSmall, "Upgrade\nkinetic\nbarrier");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontSmall.draw(batch, glyphLayout, 600,
                 updater.getAnchorPos().nanoSeconds - 830);*/
 
-        if (DataHandler.upgradeSelected == 3) {
+        if (DataHandler.itemSelected == 3) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.itemTexture, 545, updater.getAnchorPos().y - 400);
+            batch.draw(AssetLoader.epicKinetic, 545, updater.getAnchorPos().y - 400);
 
-            glyphLayout.setText(AssetLoader.font, "???");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.font, "???");
+
+            } else {
+
+                glyphLayout.setText(AssetLoader.font, "Red Matter");
+
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "item 3");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.fontMedium, "A Rare drop from loot boxes.");
+
+            } else {
+                glyphLayout.setText(AssetLoader.fontMedium, "Red matter further decreases\n" +
+                        "speed penalty from hitting stuff.");
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 500);
 
-            for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
-            }
-            for (int i = 0; i < 640 * (DataHandler.kineticBarrierLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
-            }
-
             AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-            glyphLayout.setText(AssetLoader.font, "UPGRADE");
+            glyphLayout.setText(AssetLoader.font, "SELL");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 900);
@@ -941,37 +1098,38 @@ public class Renderer {
 
         //ITEM 4
         batch.setColor(0.5f, 0.5f, 0.5f, 1);
-        batch.draw(AssetLoader.itemTexture, 813, updater.getAnchorPos().y - 400);
-        /*glyphLayout.setText(AssetLoader.fontSmall, "Upgrade\nEnergy\nShield");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.fontSmall.draw(batch, glyphLayout, 868,
-                updater.getAnchorPos().nanoSeconds - 830);*/
+        batch.draw(AssetLoader.epicEnergy, 813, updater.getAnchorPos().y - 400);
 
-        if (DataHandler.upgradeSelected == 4) {
+        if (DataHandler.itemSelected == 4) {
 
             batch.setColor(1, 1, 1, 1);
-            batch.draw(AssetLoader.itemTexture, 813, updater.getAnchorPos().y - 400);
+            batch.draw(AssetLoader.epicEnergy, 813, updater.getAnchorPos().y - 400);
 
-            glyphLayout.setText(AssetLoader.font, "???");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.font, "???");
+
+            } else {
+
+                glyphLayout.setText(AssetLoader.font, "Nuclear Battery");
+
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y);
 
-            glyphLayout.setText(AssetLoader.fontMedium, "Item 4");
+            if(DataHandler.epicArmor == 0){
+                glyphLayout.setText(AssetLoader.fontMedium, "A Rare drop from loot boxes.");
+
+            } else {
+                glyphLayout.setText(AssetLoader.fontMedium, "Nuclear battery recharges\n" +
+                        "energy shield 100% faster.");
+            }
             glyphWidth = glyphLayout.width;
             AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 500);
 
-            for (int i = 220; i < 860 - 1; i += 64) {
-                batch.draw(AssetLoader.healthFrame, i, 700, 64, 64);
-            }
-            for (int i = 0; i < 640 * (DataHandler.shieldLevel * 0.1) - 1; i += 64) {
-                batch.draw(AssetLoader.health, i + 220, 700, 64, 64);
-            }
-
-
             AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-            glyphLayout.setText(AssetLoader.font, "UPGRADE");
+            glyphLayout.setText(AssetLoader.font, "SELL");
             glyphWidth = glyphLayout.width;
             AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                     updater.getAnchorPos().y - 900);
@@ -1013,7 +1171,7 @@ public class Renderer {
                 updater.getAnchorPos().y - 750);
         AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
-        glyphLayout.setText(AssetLoader.fontMedium, "- 609$\n" +
+        glyphLayout.setText(AssetLoader.fontMedium, "- 609$\n" + DataHandler.vehicleCondition +
                 "- 20 scrap");
         glyphWidth = glyphLayout.width;
         AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
@@ -1678,6 +1836,12 @@ public class Renderer {
                 updater.getWoodenCrate().getPosition().y,
                 updater.getWoodenCrate().getHitbox().width,
                 updater.getWoodenCrate().getHitbox().height);
+
+        batch.draw(AssetLoader.steelCrate, updater.getSteelCrate().getPosition().x,
+                updater.getSteelCrate().getPosition().y,
+                updater.getSteelCrate().getHitbox().width,
+                updater.getSteelCrate().getHitbox().height);
+
     }
 
     private void drawWarning() {

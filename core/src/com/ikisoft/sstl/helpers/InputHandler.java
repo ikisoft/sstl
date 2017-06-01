@@ -172,14 +172,14 @@ public class InputHandler implements InputProcessor {
                 } else if (menuButton.isDown(x, y, 538, 1600)) {
                     updater.setGameState(Updater.GameState.SHIP);
 
-                }else if(menuButton.isDown(x, y, 540, 1206)){
-                    if(DataHandler.upgradeSelected == 1){
+                } else if (menuButton.isDown(x, y, 540, 1206)) {
+                    if (DataHandler.upgradeSelected == 1) {
                         UpgradeHandler.upgradeArmor();
-                    } else if (DataHandler.upgradeSelected == 2){
+                    } else if (DataHandler.upgradeSelected == 2) {
                         UpgradeHandler.upgradeThruster();
-                    } else if (DataHandler.upgradeSelected == 3){
+                    } else if (DataHandler.upgradeSelected == 3) {
                         UpgradeHandler.upgradeKinetic();
-                    } else if (DataHandler.upgradeSelected == 4){
+                    } else if (DataHandler.upgradeSelected == 4) {
                         UpgradeHandler.upgradeEnergyShield();
                     }
                 }
@@ -191,6 +191,28 @@ public class InputHandler implements InputProcessor {
                 if (menuButton.isDown(x, y, 538, 1600)) {
 
                     updater.setGameState(Updater.GameState.SHIP);
+                } else if (shopButton.isDown(x, y, 162, 652)) {
+                    DataHandler.itemSelected = 1;
+
+                } else if (shopButton.isDown(x, y, 408, 652)) {
+                    DataHandler.itemSelected = 2;
+
+                } else if (shopButton.isDown(x, y, 670, 652)) {
+                    DataHandler.itemSelected = 3;
+
+                } else if (shopButton.isDown(x, y, 940, 652)) {
+                    DataHandler.itemSelected = 4;
+
+                } else if (menuButton.isDown(x, y, 540, 1206)) {
+                    if (DataHandler.itemSelected == 1) {
+                        System.out.println("ARMOR SOLD");
+                    } else if (DataHandler.itemSelected == 2) {
+                        System.out.println("THRUSTER SOLD");
+                    } else if (DataHandler.itemSelected == 3) {
+                        System.out.println("KINETIC SOLD");
+                    } else if (DataHandler.itemSelected == 4) {
+                        System.out.println("ENERGY SOLD");
+                    }
                 }
 
                 break;
@@ -206,7 +228,7 @@ public class InputHandler implements InputProcessor {
 
             case STATS:
 
-                if (menuButton.isDown(x, y, 538, 1600)) {
+                if (menuButton.isDown(x, y, 540, 1600)) {
 
                     updater.setGameState(Updater.GameState.SHIP);
                 }
@@ -222,18 +244,35 @@ public class InputHandler implements InputProcessor {
 
             case CRATESPLASH:
 
-                if (menuButton.isDown(x, y, 546, 1706)) {
+                if (menuButton.isDown(x, y, 540, 1706)) {
                     updater.setGameState(Updater.GameState.GAMEOVERSCREEN);
                 } else if (menuButton.isDown(x, y, 540, 1256)) {
+                    updater.setGameState(Updater.GameState.CRATECHOOSE);
+                    //updater.openCrate();
+                } else if(menuButton.isDown(x, y, 540, 1400)){
+                    updater.nextCrate();
+                }
+                break;
 
+            case CRATECHOOSE:
+
+                if (menuButton.isDown(x, y, 540, 700)) {
 
                     updater.openCrate();
+                } else if (menuButton.isDown(x, y, 540, 800)) {
+
+                    updater.openCrate();
+                } else if (menuButton.isDown(x, y, 540, 950)){
+
+                    updater.setGameState(Updater.GameState.CRATESPLASH);
                 }
+
+
                 break;
 
             case ITEMSPLASH:
 
-                if (menuButton.isDown(x, y, 546, 1706)) {
+                if (menuButton.isDown(x, y, 540, 1706)) {
 
                     if (updater.getCrateQueue().isEmpty()) {
                         updater.setGameState(Updater.GameState.GAMEOVERSCREEN);
