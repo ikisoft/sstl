@@ -274,79 +274,79 @@ public class Renderer {
 
         drawUI();
 
-        glyphLayout.setText(AssetLoader.font, "YOU FOUND A CRATE");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getAnchorPos().y);
-
-
         //CRATES
-        if (updater.getCrateQueue().peek() == 1) {
 
-            batch.draw(AssetLoader.bigWoodenCrate,
-                    updater.getCrateLerp().x,
-                    updater.getCrateLerp().y);
+        if(!updater.getCrateQueue().isEmpty()){
 
-            batch.setColor(0.918f, 1f, 0.996f, 0.75f);
-            batch.draw(AssetLoader.glowYellowSprite,
-                    updater.getCrateLerp().x,
-                    updater.getCrateLerp().y + 124,
-                    128,
-                    128,
-                    256,
-                    256, 2, 2, rotation, true
-            );
+            glyphLayout.setText(AssetLoader.font, "YOU FOUND A CRATE");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y);
 
-            batch.setColor(1, 1, 1, 1);
+            if (updater.getCrateQueue().peek() == 1) {
 
-  /*          if (DataHandler.money >= 1000) {
-                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-            } else {
-                AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
-            }*/
+                batch.draw(AssetLoader.bigWoodenCrate,
+                        updater.getCrateLerp().x,
+                        updater.getCrateLerp().y);
 
-        } else if (updater.getCrateQueue().peek() == 2) {
+                batch.setColor(0.918f, 1f, 0.996f, 0.75f);
+                batch.draw(AssetLoader.glowYellowSprite,
+                        updater.getCrateLerp().x,
+                        updater.getCrateLerp().y + 124,
+                        128,
+                        128,
+                        256,
+                        256, 2, 2, rotation, true
+                );
 
-            batch.draw(AssetLoader.bigSteelCrate,
-                    updater.getCrateLerp().x,
-                    updater.getCrateLerp().y);
+                batch.setColor(1, 1, 1, 1);
+            } else if (updater.getCrateQueue().peek() == 2) {
 
-            batch.setColor(0.918f, 1f, 0.996f, 0.75f);
-            batch.draw(AssetLoader.glowYellowSprite,
-                    updater.getCrateLerp().x,
-                    updater.getCrateLerp().y + 124,
-                    128,
-                    128,
-                    256,
-                    256, 2, 2, rotation, true
-            );
+                batch.draw(AssetLoader.bigSteelCrate,
+                        updater.getCrateLerp().x,
+                        updater.getCrateLerp().y);
 
-            batch.setColor(1, 1, 1, 1);
+                batch.setColor(0.918f, 1f, 0.996f, 0.75f);
+                batch.draw(AssetLoader.glowYellowSprite,
+                        updater.getCrateLerp().x,
+                        updater.getCrateLerp().y + 124,
+                        128,
+                        128,
+                        256,
+                        256, 2, 2, rotation, true
+                );
+                batch.setColor(1, 1, 1, 1);
 
-            /*if (DataHandler.money >= 2500) {
-                AssetLoader.font.setColor(0.918f, 1f, 0.996f, 1);
-            } else {
-                AssetLoader.font.setColor(1, 0.5f, 0.5f, 1);
-            }*/
+            }
+            //TEXT
+            glyphLayout.setText(AssetLoader.font, "OPEN");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 850);
+            AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
 
+            AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
+            glyphLayout.setText(AssetLoader.fontMedium, "NEXT CRATE");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 1000);
+
+            glyphLayout.setText(AssetLoader.font, "OPEN LATER");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 1300);
+            //NO CRATES
+        } else {
+            glyphLayout.setText(AssetLoader.font, "YOU HAVE NO CRATES");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y);
+
+            glyphLayout.setText(AssetLoader.font, "BACK");
+            glyphWidth = glyphLayout.width;
+            AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                    updater.getAnchorPos().y - 1300);
         }
-        //TEXT
-        glyphLayout.setText(AssetLoader.font, "OPEN");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getAnchorPos().y - 850);
-        AssetLoader.font.setColor(0.141f, 0.848f, 0.407f, 1f);
-
-        AssetLoader.fontMedium.setColor(1, 0.831f, 0, 1f);
-        glyphLayout.setText(AssetLoader.fontMedium, "NEXT CRATE");
-        glyphWidth = glyphLayout.width;
-        AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getAnchorPos().y - 1000);
-
-        glyphLayout.setText(AssetLoader.font, StringConstants.crateSplashContinue);
-        glyphWidth = glyphLayout.width;
-        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
-                updater.getAnchorPos().y - 1300);
 
         batch.end();
 
@@ -591,10 +591,19 @@ public class Renderer {
         AssetLoader.fontSmall.draw(batch, glyphLayout, glyphWidth,
                 updater.getAnchorPos().y - 1400);
 
-        glyphLayout.setText(AssetLoader.fontMedium, StringConstants.gameoverText2);
+        AssetLoader.fontMedium.setColor(0.141f, 0.848f, 0.407f, 1f);
+        glyphLayout.setText(AssetLoader.fontMedium,
+                "Money collected: " + updater.getMoneyThisRun() + "\n" +
+                "Distance: " + updater.getDistance());
         glyphWidth = glyphLayout.width;
         AssetLoader.fontMedium.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
                 updater.getAnchorPos().y - 300);
+
+
+        glyphLayout.setText(AssetLoader.font, "CRATES");
+        glyphWidth = glyphLayout.width;
+        AssetLoader.font.draw(batch, glyphLayout, (VIRTUAL_WIDTH - glyphWidth) / 2,
+                updater.getAnchorPos().y - 550);
 
         glyphLayout.setText(AssetLoader.font, "SHIP");
         glyphWidth = glyphLayout.width;

@@ -125,6 +125,8 @@ public class InputHandler implements InputProcessor {
                     updater.setGameState(Updater.GameState.SHIP);
                 } else if (menuButton.isDown(x, y, 540, 1430)) {
                     updater.resetGame();
+                } else if (menuButton.isDown(x, y, 540, 956)) {
+                    updater.setGameState(Updater.GameState.CRATESPLASH);
                 }
 
                 break;
@@ -249,7 +251,7 @@ public class InputHandler implements InputProcessor {
                 } else if (menuButton.isDown(x, y, 540, 1256)) {
                     updater.setGameState(Updater.GameState.CRATECHOOSE);
                     //updater.openCrate();
-                } else if(menuButton.isDown(x, y, 540, 1400)){
+                } else if (menuButton.isDown(x, y, 540, 1400)) {
                     updater.nextCrate();
                 }
                 break;
@@ -262,7 +264,7 @@ public class InputHandler implements InputProcessor {
                 } else if (menuButton.isDown(x, y, 540, 800)) {
 
                     updater.openCrate();
-                } else if (menuButton.isDown(x, y, 540, 950)){
+                } else if (menuButton.isDown(x, y, 540, 950)) {
 
                     updater.setGameState(Updater.GameState.CRATESPLASH);
                 }
@@ -279,9 +281,7 @@ public class InputHandler implements InputProcessor {
                     } else {
                         updater.setGameState(Updater.GameState.CRATESPLASH);
                     }
-
                 }
-
         }
 
         return false;

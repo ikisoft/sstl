@@ -36,7 +36,6 @@ public class StringConstants {
         gameoverText = "oh dear, you ran into\nsome junk... ;(";
         gameoverText2 = "Max speed: " + "" + "\n" +
                 "Money collected: " + updater.getMoneyThisRun() + "\n" +
-                "Ship durability -" + "" + "\n" +
                 "Distance: " + updater.getDistance();
         armorText = "The armor plating of your spaceship\n" +
                 "determines how many hits you can\n" +

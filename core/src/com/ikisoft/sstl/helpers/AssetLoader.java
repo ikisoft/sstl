@@ -258,11 +258,6 @@ public class AssetLoader {
         lootText2 = lootStringArray.get(loot2);
         lootText3 = lootStringArray.get(loot3);
 
-
-
-
-
-
     }
 
     public static void dispose() {

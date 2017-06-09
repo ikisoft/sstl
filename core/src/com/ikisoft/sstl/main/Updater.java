@@ -542,7 +542,6 @@ public class Updater {
             gameState = GameState.ITEMSPLASH;
             DataHandler.money -= 2500;
         } else {
-            System.out.println("NO MONEY NIGGA");
             crateQueue.poll();
             if(!crateQueue.isEmpty()){
                 crateSplash.reset(2000, 800);
@@ -554,11 +553,21 @@ public class Updater {
     }
 
     public void nextCrate(){
-        crateQueue.poll();
+
+        int crateType = crateQueue.poll();
+
+        if(crateType == 1){
+            DataHandler.woodenCrate ++;
+        } else if(crateType == 2){
+            DataHandler.steelCrate ++;
+        }
+
         if(!crateQueue.isEmpty()){
             crateSplash.reset(2000, 800);
             gameState = GameState.CRATESPLASH;
+
         } else {
+
             gameState = GameState.GAMEOVERSCREEN;
         }
     }

@@ -24,14 +24,16 @@ public class DataHandler {
     public static int epicThruster;
     public static int epicKinetic;
     public static int epicEnergy;
+    public static int woodenCrate;
+    public static int steelCrate;
     public static int upgradeSelected;
     public static int itemSelected;
-    public static int shopHelper;
     public static boolean crateCollected;
-
     public static boolean soundMuted, musicMuted;
 
-    public static void load(){
+
+
+    public static void load() {
 
         upgradeSelected = 0;
         itemSelected = 0;
@@ -45,6 +47,8 @@ public class DataHandler {
         epicThruster = prefs.getInteger("epic_thruster");
         epicKinetic = prefs.getInteger("epic_kinetic");
         epicEnergy = prefs.getInteger("epic_energy");
+        woodenCrate = prefs.getInteger("wooden_crate");
+        steelCrate = prefs.getInteger("steel_crate");
 
         epicArmor = 0;
         epicThruster = 0;
@@ -84,7 +88,7 @@ public class DataHandler {
         crateCollected = false;
     }
 
-    public static void save(){
+    public static void save() {
 
         prefs.putInteger("money", money);
         prefs.putInteger("scrap", scrap);
@@ -95,12 +99,11 @@ public class DataHandler {
         prefs.putInteger("barrier_level", kineticBarrierLevel);
         prefs.putInteger("shield_level", shieldLevel);
         prefs.putInteger("vehicle_condition", vehicleCondition);
-
-
+        prefs.putInteger("wooden_crate", woodenCrate);
+        prefs.putInteger("steel_crate", steelCrate);
         prefs.putBoolean("soundMuted", soundMuted);
         prefs.putBoolean("musicMuted", musicMuted);
         prefs.flush();
-
 
     }
 
